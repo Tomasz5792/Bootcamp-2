@@ -1,0 +1,5 @@
+$kind: http-request
+description: Removes a specific vehicle from the Car-Go Rentals fleet by its identifier. Use this request to permanently delete a vehicle record — for example, when a vehicle is retired or sold. The target vehicle should be specified in the request URL before sending.
+url: http://127.0.0.1:5000/vehicle/TEST999
+method: DELETE
+order: 4476075341565322
