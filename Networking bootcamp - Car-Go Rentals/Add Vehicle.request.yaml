@@ -1,0 +1,36 @@
+$kind: http-request
+description: 'Adds a new vehicle to the Car-Go Rentals fleet. The request body must include all required vehicle details — such as make, model, colour, VIN, VRM, category, number of seats, day rate, fuel economy, status, and branch. A sample Toyota Yaris payload is included as a starting point.'
+url: http://127.0.0.1:5000//vehicle
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \"id\": 9999,\r
+
+    \"make\": \"Toyota\",\r
+
+    \"model\": \"Yaris\",\r
+
+    \"colour\": \"Blue\",\r
+
+    \"vin\": \"TEST123456\",\r
+
+    \"year\": 2024,\r
+
+    \"vrm\": \"TEST999\",\r
+
+    \"category\": \"Compact\",\r
+
+    \"numberSeats\": 4,\r
+
+    \"dayRate\": 40,\r
+
+    \"status\": \"AVAILABLE\",\r
+
+    \"fuelEconomy\": 20,\r
+
+    \"branch\": \"Manchester\"\r
+
+    }"
+order: 4411125522779000

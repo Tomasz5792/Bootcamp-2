@@ -1,0 +1,14 @@
+$kind: http-request
+description: 'Looks up a single vehicle by its Vehicle Registration Mark (VRM). The VRM is read from the `vrm` collection variable — a pre-request script validates that this variable is set before the request is sent. Returns the full details of the matching vehicle.'
+url: 'http://127.0.0.1:5000/vehicle/{{vrm}}'
+method: GET
+order: 1683406955956
+scripts:
+  - type: beforeRequest
+    language: text/javascript
+    code: |-
+      const vrm = pm.collectionVariables.get("vrm");
+      if (!vrm || vrm.trim() === "") {
+          throw new Error("VRM is not set. Please enter a value for the 'vrm' collection variable before sending this request.");
+      }
+      console.log("Looking up vehicle with VRM:", vrm);
