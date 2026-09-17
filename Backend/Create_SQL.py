@@ -1,6 +1,13 @@
 #https://www.w3schools.com/python/ref_module_sqlite3.asp
 #https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html
 
+"""
+Status in 1 table in rentals table. Fields would be: Booked, active, completed, cancelled. uses calendar date and compares 
+it to booking date and if they are equal changes status to active, otherwise the car is available.
+
+allow date queries to get cars which are available.
+"""
+
 import sqlite3
 from flask import app
 import pandas as pd
