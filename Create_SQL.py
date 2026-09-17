@@ -6,7 +6,14 @@ from flask import app
 import pandas as pd
 
 def create_database():
+    """Creates an in-memory SQLite database and populates it with data from CSV files.
 
+    Args:
+        None
+    
+    Returns:
+        sqlite3.Connection: Connection object to the in-memory SQLite database
+    """
     #conn = sqlite3.connect(':memory:')
     conn = sqlite3.connect(':memory:', check_same_thread=False)
 
