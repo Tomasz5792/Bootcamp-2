@@ -20,7 +20,7 @@
 
 # Security:
 # - add authentication to the API
-# - add authorization to the API (e.g. only allow certain users to add/remove vehicles, rent/return vehicles, etc.)
+# - add authorization to the API (e.g. only allow certain users to add/remove vehicles)
 
 # Documentation:
 # - add documentation for the API - Postman collection
