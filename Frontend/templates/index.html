@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Car Rentals | Home{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-text">
+        <h1>Find the perfect car for your journey</h1>
+        <p>Book simply and quickly, with no hidden fees.</p>
+    </div>
+
+    <div class="booking-container">
+        <form class="booking-form" action="/search" method="GET">
+            <div class="form-group">
+                <label for="car_type">Select Car</label>
+                <select id="car_type" name="car_type">
+                    <option value="any">Any Model</option>
+                    <option value="compact">Honda Civic 1.8 (Compact)</option>
+                    <option value="suv">Volvo XC90 (SUV / Family)</option>
+                    <option value="premium">Premium Class</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="pickup_date">Pick-up Date</label>
+                <input type="date" id="pickup_date" name="pickup_date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="return_date">Return Date</label>
+                <input type="date" id="return_date" name="return_date" required>
+            </div>
+            
+            <div class="form-group button-group">
+                <button type="submit" class="btn-search">Check Availability</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
