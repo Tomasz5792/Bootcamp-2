@@ -29,7 +29,7 @@ def home_page():
     return "<p>Car company home page.</p>"
 
 
-# - show all vehicles
+# show all vehicles
 #http://127.0.0.1:5000/vehicles
 @app.route("/vehicles")
 def get_vehicles():
@@ -45,7 +45,7 @@ def get_vehicles():
     return df.to_json(orient="records")
 
 
-# - show details of specific vehicle (according to car reg)
+# show details of specific vehicle (according to car reg)
 #http://127.0.0.1:5000/vehicles/JA82VXV
 #http://127.0.0.1:5000/vehicles/empty
 @app.route("/vehicles/<vrm>")
@@ -63,7 +63,7 @@ def get_vehicle(vrm):
         return jsonify({'error': 'Vehicle not found'}), 404
     return df.to_json(orient="records")
 
-# - show vehicles available for rent (preferably organised per branch)
+# show vehicles available for rent (preferably organised per branch)
 #http://127.0.0.1:5000/vehicle/available
 @app.route('/vehicle/available')
 def get_available_vehicles():
@@ -79,7 +79,7 @@ def get_available_vehicles():
 
     return df.to_json(orient='records')
 
-# - show vehicles currently rented out (preferably organised per branch)
+# show vehicles currently rented out (preferably organised per branch)
 #http://127.0.0.1:5000/vehicle/rented
 @app.route('/vehicle/rented')
 def get_rented_vehicles():
@@ -95,7 +95,7 @@ def get_rented_vehicles():
 
     return df.to_json(orient='records')
 
-# - show reports for number of vehicles per branch
+# show reports for number of vehicles per branch
 #http://127.0.0.1:5000/reports/branch
 @app.route('/reports/branch')
 def get_branch_report():

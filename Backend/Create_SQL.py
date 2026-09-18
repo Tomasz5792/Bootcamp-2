@@ -42,8 +42,8 @@ def create_database():
             customer_id INTEGER,
             vehicle_id INTEGER,
             status_date_time DATETIME,
-            return_location TEXT,
-            status TEXT CHECK(status IN ('RENTED', 'RETURNED', 'DAMAGED', 'SERVICEREQ')),
+            status_location TEXT CHECK(status_location IN ('Bristol', 'Manchester', 'Luton')),
+            status TEXT CHECK(status IN ('AVAILABLE', 'RENTED', 'RETURNED', 'DAMAGED', 'SERVICEREQ')),
             FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
             FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id),
             UNIQUE (vehicle_id, status_date_time)
@@ -58,22 +58,25 @@ def create_database():
     #adding vehicle data into the status table
     for index, row in vehicles.iterrows():
 
-        if row['status'] != 'AVAILABLE':
+        customer_id = random.choice(customer_ids)  # randomly assign a customer_id from the customers table
+        vehicle_id = row['vehicle_id']
+        status_date_time = (datetime.datetime.now()
+                            - pd.Timedelta(days=random.randint(1, 30))
+                            - pd.Timedelta(seconds=random.randint(0, 86399))
+                            ).strftime('%Y-%m-%d %H:%M:%S')  # random date within the last 30 days
+        status_location = row['branch']  # adds branch locations
+        status = row['status']
 
-            customer_id = random.choice(customer_ids)  # randomly assign a customer_id from the customers table
-            vehicle_id = row['vehicle_id']
-            status_date_time = (datetime.datetime.now()
-                                - pd.Timedelta(days=random.randint(1, 30))
-                                - pd.Timedelta(seconds=random.randint(0, 86399))
-                                ).strftime('%Y-%m-%d %H:%M:%S')  # random date within the last 30 days
-            return_location = None
-            status = row['status']  # adds statusses which are not AVAILABLE
+        cursor.execute(
+        "INSERT INTO status (customer_id, vehicle_id, status_date_time, status_location, status) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (customer_id, vehicle_id, status_date_time, status_location, status)
+    )
+            
+    #drop status column from vehicles table
+    cursor.execute("ALTER TABLE vehicles DROP COLUMN status")
+    cursor.execute("ALTER TABLE vehicles DROP COLUMN branch")
 
-            cursor.execute(
-            "INSERT INTO status (customer_id, vehicle_id, status_date_time, return_location, status) "
-            "VALUES (?, ?, ?, ?, ?)",
-            (customer_id, vehicle_id, status_date_time, return_location, status)
-        )
     conn.commit()
 
     return conn
@@ -88,7 +91,7 @@ def check_database(conn):
     print(pd.read_sql('SELECT * FROM customers LIMIT 5', conn))
 
     print("\nstatus:")
-    print(pd.read_sql('SELECT * FROM status LIMIT 5', conn))
+    print(pd.read_sql('SELECT * FROM status LIMIT 10', conn))
 
 
 if __name__ == "__main__":
