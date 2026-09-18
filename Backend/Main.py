@@ -1,14 +1,29 @@
 # For individual vehicles:
-# - show details of specific vehicle (according to car reg)                 - done
+# - show details of specific vehicle (according to car reg) --------------------------------------------------- done
 # - rent a specific vehicle
 # - return a specific vehicle
 # - add a new vehicle to the rental fleet
 # - remove a specific vehicle from the rental fleet
 
 # For multiple vehicles:
-# - show all vehicles                                                       - done
+# - show all vehicles ----------------------------------------------------------------------------------------- done
 # - show vehicles available for rent (preferably organised per branch)
 # - show vehicles currently rented out (preferably organised per branch)
+
+# Extensions:
+# - Homepage -------------------------------------------------------------------------------------------------- done
+# - show reports for number of vehicles per branch
+# - show reports for number of vehicles per status (available, rented, returned, damaged, service required)
+# - show reports for number of vehicles per status per branch
+# - As above but for a specific time period (e.g. last week, last month, last year)
+# - Create sign up for a new customer and add them to the customers table
+
+# Security:
+# - add authentication to the API
+# - add authorization to the API (e.g. only allow certain users to add/remove vehicles, rent/return vehicles, etc.)
+
+# Documentation:
+# - add documentation for the API - Postman collection
 
 
 from flask import Flask, jsonify
@@ -19,7 +34,9 @@ from Create_SQL import create_database, check_database
 
 app = Flask(__name__)
 conn = create_database()
-#check_database(conn)
+#check_database(conn)  # shows the sql tables for debugging purposes
+
+
 
 
 #homepage
@@ -27,6 +44,8 @@ conn = create_database()
 @app.route("/")
 def home_page():
     return "<p>Car company home page.</p>"
+
+
 
 
 # show all vehicles
@@ -43,6 +62,8 @@ def get_vehicles():
     """
     df = pd.read_sql('SELECT * FROM vehicles', conn)
     return df.to_json(orient="records")
+
+
 
 
 # show details of specific vehicle (according to car reg)
@@ -63,6 +84,12 @@ def get_vehicle(vrm):
         return jsonify({'error': 'Vehicle not found'}), 404
     return df.to_json(orient="records")
 
+
+
+
+# doesn't work needs updating using status table.  
+# dont use status == AVAILABLE join vehicules to status to get the last status 
+
 # show vehicles available for rent (preferably organised per branch)
 #http://127.0.0.1:5000/vehicle/available
 @app.route('/vehicle/available')
@@ -79,6 +106,13 @@ def get_available_vehicles():
 
     return df.to_json(orient='records')
 
+
+
+
+# doesn't work needs updating using status table.  
+# dont use status == AVAILABLE join vehicules to status to get the last status 
+# Extension: find availiable over a certion perion of time.
+
 # show vehicles currently rented out (preferably organised per branch)
 #http://127.0.0.1:5000/vehicle/rented
 @app.route('/vehicle/rented')
@@ -92,8 +126,14 @@ def get_rented_vehicles():
         JSON: JSON object containing all rented vehicles in the database
     """
     df = pd.read_sql("SELECT * FROM vehicles WHERE status='RENTED'",conn)
-
     return df.to_json(orient='records')
+
+
+
+
+# doesn't work needs updating using status table.  
+# dont use status == AVAILABLE, join vehicules to status and location.
+# Extension: find availiable over a certion perion of time.
 
 # show reports for number of vehicles per branch
 #http://127.0.0.1:5000/reports/branch
@@ -113,10 +153,12 @@ def get_branch_report():
     FROM vehicles
     GROUP BY branch
     """
-
     df = pd.read_sql(query,conn)
-
     return df.to_json(orient="records")
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
+    
