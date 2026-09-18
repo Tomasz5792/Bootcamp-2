@@ -26,27 +26,49 @@
 # - add documentation for the API - Postman collection
 
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import pandas as pd
 #import json
 from Create_SQL import create_database, check_database
 
 
-app = Flask(__name__)
+#app = Flask(__name__)
+app = Flask(__name__, template_folder="../Frontend/templates", static_folder="../Frontend/static") #frontend html
+
 conn = create_database()
 #check_database(conn)  # shows the sql tables for debugging purposes
 
 
-
+#Pages
 
 #homepage
 #http://127.0.0.1:5000/
 @app.route("/")
-def home_page():
-    return "<p>Car company home page.</p>"
+def login_page():
+    return render_template("Login.html")
+
+#test page
+#http://127.0.0.1:5000/test
+@app.route("/test")
+def test_page():
+    return render_template("Test.html")
+
+#customer home page
+#http://127.0.0.1:5000/home
+@app.route("/home")
+def customer_home():
+    return render_template("CustomerHome.html")
+
+#staff home page
+#http://127.0.0.1:5000/staffhome
+@app.route("/staffhome")
+def staff_home():
+    return render_template("StaffHome.html")
 
 
 
+
+#API json endpoints
 
 # show all vehicles
 #http://127.0.0.1:5000/vehicles

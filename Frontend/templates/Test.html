@@ -1,0 +1,115 @@
+<!-- http://127.0.0.1:5000/test -->
+<!-- https://www.w3schools.com/htmlcss/htmlcss_first_webpage.asp -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My First Website</title>
+  <!-- <link rel="stylesheet" href="css/styles.css" type="text/css"> -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Hello, world!</h1>
+    <p>This site is built with HTML and CSS.</p>
+  </header>
+  <main>
+    <section>
+      <h2>About Me</h2>
+      <p>I am learning how to code websites from scratch.</p>
+    </section>
+    <section>
+      <h2>Projects</h2>
+      <ul>
+        <li>Portfolio landing page</li>
+        <li>Product showcase</li>
+        <li>Responsive blog layout</li>
+      </ul>
+    </section>
+    <section>
+    <h2>Example inputs</h2>
+    <p>This is normal text.</p>
+    <input type="text">
+    <input type="password">
+    <input type="number">
+    <input type="email">
+    <input type="checkbox">
+    <input type="radio">
+    <input type="submit"> 
+    </section>
+
+    <!-- https://www.w3schools.com/js/js_api_fetch.asp -->
+    <section>
+    <h1>JavaScript Fetch API</h1>
+    <h2>Fetching a Text File</h2>
+
+    <p id="demo"></p>
+
+    <script>
+    let file = "fetch.txt";
+
+    // Fetch a file
+    fetch("http://127.0.0.1:5000/vehicles/JA82VXV")
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(data) {
+        myDisplayer(data);
+      });
+
+    // Function to display any text
+    function myDisplayer(text) {
+      document.getElementById("demo").innerHTML = text;
+    }
+    </script>
+    </section>
+
+
+
+    <section>
+    <h2>Testing, Get car detail on reg</h2>
+    <input type="text" id="carReg" placeholder="Enter Car Reg"><span>  eg: JA82VXV</span><br>
+    <button onclick="getCarByReg();">Get Car Details</button>
+    <!-- need get car script -->
+    <p id="carDetails"></p>
+    <script>
+    document.getElementById("carDetails2").innerHTML = "http://127.0.0.1:5000/vehicles/JA82VXV";
+    </script>
+
+    <script>
+        async function getCarByReg() {
+            const reg = document.getElementById("carReg").value;
+            const resultBox = document.getElementById("carDetails");
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/vehicles/${reg}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    resultBox.textContent = `Error: ${data.error}`;
+                    return;
+                }
+
+                resultBox.textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                resultBox.textContent = `Request failed: ${err}`;
+            }
+        }
+    </script>
+
+    </section>
+    <section>
+    <p>This example writes "Hello JavaScript!" into an HTML element with id="demo":</p>
+    <p id="demo"></p>
+    <script>
+    document.getElementById("demo").innerHTML = "Hello JavaScript!";
+    </script> 
+    </section>
+  </main>
+  <footer>
+    <p>Built with ❤️ using HTML & CSS.</p>
+  </footer>
+</body>
+</html>
