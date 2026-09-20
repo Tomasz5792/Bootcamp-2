@@ -3,3 +3,5 @@ Changed id to vehicle_id in vehcule csv
 
 data is a mess it needs to be split into sql tables to make sense
 
+Javascript isn't as human readable as python
+

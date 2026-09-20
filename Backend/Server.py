@@ -51,7 +51,13 @@ def login_page():
 #http://127.0.0.1:5000/test
 @app.route("/test")
 def test_page():
-    return render_template("Test.html")
+    return render_template("test/Test.html")
+
+#test HTTP Request page
+#http://127.0.0.1:5000/testHTTPRequest
+@app.route("/testHTTPRequest")
+def test_pageHTTPRequest():
+    return render_template("test/TestHTTPRequest.html")
 
 #customer home page
 #http://127.0.0.1:5000/home

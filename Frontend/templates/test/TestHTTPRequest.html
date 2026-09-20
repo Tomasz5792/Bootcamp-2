@@ -1,0 +1,78 @@
+<!-- http://127.0.0.1:5000/testHTTPRequest -->
+<!-- https://www.w3schools.com/js/tryit.asp?filename=tryjs_fetch -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JavaScript Fetch API</title>
+</head>
+<body>
+<h1>JavaScript Fetch API</h1>
+<h2>Fetching a Text File</h2>
+
+<p id="demo"></p>
+
+<!-- checking if tables work -->
+<table border="1">
+  <tr>
+    <th>Column 1</th>
+    <th>Column 2</th>
+  </tr>
+  <tr>
+    <td>Hello</td>
+    <td>World</td>
+  </tr>
+</table><br>
+
+<!-- displaying http request as table -->
+<table id="demoTable" border="1"></table>
+
+
+<script>
+let file = "http://127.0.0.1:5000/vehicles/JA82VXV";
+
+// Fetch a file
+fetch(file)
+  .then(function(response) {
+    return response.text();
+  })
+  .then(function(data) {
+    myDisplayer(data);
+  });
+
+// Function to display any text
+function myDisplayer(text) {
+  document.getElementById("demo").innerHTML = text;
+}
+</script>
+
+
+<script>
+// Fetching a JSON file and displaying it as a table script  <table id="demoTable" border="1"></table>
+let file2 = "http://127.0.0.1:5000/vehicles/JA82VXV";
+
+// Fetch a file
+fetch(file2)
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(data) {
+    displayTable(data);
+  });
+
+  // Function to display table
+function displayTable(data) {
+  let vehiculeData = data[0];  // data is an object and not an array so have to take first item.
+  let html = "<tr><th>Field</th><th>Value</th></tr>";
+  for (let key in vehiculeData) {
+    html += `<tr><td>${key}</td><td>${vehiculeData[key]}</td></tr>`;
+  }
+  document.getElementById("demoTable").innerHTML = html;
+}
+</script>
+
+
+</body>
+</html> 

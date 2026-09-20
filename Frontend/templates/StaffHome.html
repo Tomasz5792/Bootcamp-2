@@ -1,17 +1,54 @@
 <!-- http://127.0.0.1:5000/staffhome -->
 
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Staff Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  </head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
   <body>
-    <h1>Staff Home</h1>
-    <h2>Testing, Get car detail on reg</h2>
-    <input type="text" id="carReg" placeholder="Enter Car Reg"><br>
-    <button onclick="getCarDetails();">Get Car Details</button>
-    <!-- need get car script -->
+    <header>
+      <h1>Staff Home</h1>
+    </header>
+    <main>
+      <section>
+        <h2>Welcome to the Staff Home Page</h2>
+        <p>This is the staff home page of the website.</p>
+      </section>
+
+      <section> 
+        <h2>Get car detail on reg</h2>
+        <input type="text" id="carReg" placeholder="Enter Car Reg"><br>
+        <button onclick="getCarDetails();">Get Car Details</button>
+        <table id="carDetailsTable" border="1"></table>
+        
+        <!-- get car to table script -->
+        <script>
+        // Fetching a JSON file and displaying it as a table script  <table id="demoTable" border="1"></table>
+        let file2 = "http://127.0.0.1:5000/vehicles/JA82VXV";
+
+        // Fetch a file
+        fetch(file2)
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(data) {
+            displayTable(data);
+          });
+
+          // Function to display table
+        function displayTable(data) {
+          let vehiculeData = data[0];  // data is an object and not an array so have to take first item.
+          let html = "<tr><th>Field</th><th>Value</th></tr>";
+          for (let key in vehiculeData) {
+            html += `<tr><td>${key}</td><td>${vehiculeData[key]}</td></tr>`;
+          }
+          document.getElementById("carDetailsTable").innerHTML = html;
+        }
+        </script>
+      </section>
 
   </body>
 </html>
