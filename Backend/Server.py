@@ -39,6 +39,8 @@ conn = create_database()
 #check_database(conn)  # shows the sql tables for debugging purposes
 
 
+
+
 #Pages
 
 #homepage

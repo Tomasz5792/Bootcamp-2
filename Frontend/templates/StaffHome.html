@@ -20,25 +20,35 @@
 
       <section> 
         <h2>Get car detail on reg</h2>
-        <input type="text" id="carReg" placeholder="Enter Car Reg"><br>
-        <button onclick="getCarDetails();">Get Car Details</button>
+        <input type="text" id="carReg" placeholder="Enter Car Reg"><span>  eg: JA82VXV</span><br>
+        <button onclick="getCarByReg();">Get Car Details</button><br><br>
         <table id="carDetailsTable" border="1"></table>
         
         <!-- get car to table script -->
         <script>
         // Fetching a JSON file and displaying it as a table script  <table id="demoTable" border="1"></table>
-        let file2 = "http://127.0.0.1:5000/vehicles/JA82VXV";
 
-        // Fetch a file
-        fetch(file2)
-          .then(function(response) {
-            return response.json();
-          })
-          .then(function(data) {
-            displayTable(data);
-          });
+          // get car to table script
+          async function getCarByReg() {
+            const reg = document.getElementById("carReg").value;
+            const resultBox = document.getElementById("carDetailsTable");
 
-          // Function to display table
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/vehicles/${reg}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    resultBox.textContent = `Error: ${data.error}`;
+                    return;
+                }
+
+                displayTable(data);  //not [data] because data is an object and not an array so have to take first item.
+            } catch (err) {
+                resultBox.textContent = `Request failed: ${err}`;
+            }
+        }
+
+        // Function to display table
         function displayTable(data) {
           let vehiculeData = data[0];  // data is an object and not an array so have to take first item.
           let html = "<tr><th>Field</th><th>Value</th></tr>";

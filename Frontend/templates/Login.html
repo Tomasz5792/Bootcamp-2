@@ -1,17 +1,28 @@
 <!-- http://127.0.0.1:5000/ -->
 
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Login Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  </head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
   <body>
-    <h1>Login Page</h1>
-    <button onclick="window.location.href='/login';">Login</button>
-    <button onclick="window.location.href='/register';">Register</button>
-    <h2>Testing, Delete later</h2>
-    <button onclick="window.location.href='/home';">Customer Home</button>
-    <button onclick="window.location.href='/staffhome';">Staff Home</button>
+    <header>
+      <h1>Home Page</h1>
+    </header>
+    <main>
+      <section>
+        <h2>Welcome to the Login Page</h2>
+        <button onclick="window.location.href='/login';">Login</button>
+        <button onclick="window.location.href='/register';">Register</button>
+      </section>
+      <section>
+        <h2>Testing, Delete later</h2>
+        <button onclick="window.location.href='/home';">Customer Home</button>
+        <button onclick="window.location.href='/staffhome';">Staff Home</button>
+      </section>
+    </main>
   </body>
 </html>
