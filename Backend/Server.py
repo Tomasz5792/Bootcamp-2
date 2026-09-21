@@ -45,7 +45,7 @@ conn = create_database()
 
 #Login.html
 #http://127.0.0.1:5000/
-@app.route("/homelogin")
+@app.route("/")
 def login_page():
     return render_template("HomeLogin.html")
 
