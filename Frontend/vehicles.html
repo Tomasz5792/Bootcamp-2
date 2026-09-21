@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rentals | Fleet</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="vehicles.html">Fleet</a>
+                <a href="customers.html">Customers</a>
+            </div>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn-login">Log In</a>
+                <a href="signup.html" class="btn-signup">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Vehicle Fleet</h1>
+        
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>VRM</th>
+                    <th>Make / Model</th>
+                    <!-- You can add more columns like Status, Price, etc. -->
+                </tr>
+            </thead>
+            <tbody id="vehiclesBody">
+                <!-- Data will be loaded here via JavaScript -->
+                <tr><td colspan="2">Loading vehicles...</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Fetch data from the Python API
+            fetch('http://127.0.0.1:5000/vehicles')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.getElementById('vehiclesBody');
+                    tableBody.innerHTML = ''; // Clear loading message
+                    
+                    data.forEach(vehicle => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${vehicle.vrm || 'N/A'}</td>
+                            <td>${vehicle.make || 'N/A'}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('vehiclesBody').innerHTML = '<tr><td colspan="2" style="color:red;">Error loading data from server. Make sure the API is running and CORS is enabled.</td></tr>';
+                });
+        });
+    </script>
+</body>
+</html>

@@ -14,8 +14,8 @@
 from flask import Flask, jsonify
 import pandas as pd
 #import json
-from Backend.Create_SQL import create_database
-from Backend.Create_SQL import check_database
+from Create_SQL import create_database
+from Create_SQL import check_database
 
 
 app = Flask(__name__)
