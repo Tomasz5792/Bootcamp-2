@@ -173,18 +173,6 @@ def get_available_vehicles():
     Returns:
         JSON: JSON object containing all available vehicles in the database
     """
-<<<<<<< Updated upstream
-    df = pd.read_sql(
-    """
-    SELECT v.*, s.status
-    FROM vehicles v
-    JOIN status s
-        ON v.vehicle_id = s.vehicle_id
-    WHERE s.status='AVAILABLE'
-    """,
-    conn)
-    return df.to_json(orient='records')
-=======
 
     query = """
     SELECT
@@ -205,7 +193,6 @@ def get_available_vehicles():
     df = pd.read_sql(query, conn)
 
     return df.to_json(orient="records")
->>>>>>> Stashed changes
 
 
 
