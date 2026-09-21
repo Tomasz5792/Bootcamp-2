@@ -116,10 +116,11 @@ def test_pageHTTPRequest():
 
 
 
-
-##########################
-### API json endpoints ###
-##########################
+##############################
+##############################
+##### API json endpoints #####
+##############################
+##############################
 
 # show all vehicles
 #http://127.0.0.1:5000/vehicles
@@ -135,8 +136,6 @@ def get_vehicles():
     """
     df = pd.read_sql('SELECT * FROM vehicles', conn)
     return df.to_json(orient="records")
-
-
 
 
 # show details of specific vehicle (according to car reg)
@@ -201,14 +200,19 @@ def search_available_vehicles():
     """GETs all available vehicles filtered by location, type, from and to and returns as a JSON.
     Does this by filtering on the last status before <from> being availabe and there being no status changes between <from> and <to>
 
+    Example requests:
+        /vehicle/available/search
+        /vehicle/available/search?loc=Bristol&type=Compact
+        /vehicle/available/search?loc=Manchester&type=SUV&from=2026-09-21&to=2026-10-05
+
     Args (query params):
         loc (str, optional): Bristol, Manchester, Luton
         type (str, optional): Compact, Budget, Truck, SUV, Sport, Family, Van, Coupe
-        from (str, optional): start date (YYYY-MM-DD)
-        to (str, optional): end date (YYYY-MM-DD)
+        from (str, optional): start date (YYYY-MM-DD) if no date uses today
+        to (str, optional): end date (YYYY-MM-DD) if no date uses today + 1
 
     Returns:
-        JSON: JSON object of matching available vehicles
+        str: JSON object of matching available vehicles.
     """
     loc = request.args.get('loc')
     vehicle_type = request.args.get('type')
