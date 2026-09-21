@@ -79,6 +79,15 @@ def create_database():
 
     conn.commit()
 
+    # code to write SQL tables to csv files
+    vehicles_df = pd.read_sql('SELECT * FROM vehicles', conn)
+    customers_df = pd.read_sql('SELECT * FROM customers', conn)
+    status_df = pd.read_sql('SELECT * FROM status', conn)
+
+    vehicles_df.to_csv('Data/current/vehicles_export.csv', index=False)
+    customers_df.to_csv('Data/current/customers_export.csv', index=False)
+    status_df.to_csv('Data/current/status_export.csv', index=False)
+
     return conn
 
 

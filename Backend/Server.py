@@ -26,10 +26,11 @@
 # - add documentation for the API - Postman collection
 
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 import pandas as pd
-#import json
+import json
 from Create_SQL import create_database, check_database
+import datetime
 
 
 #app = Flask(__name__)
@@ -157,11 +158,8 @@ def get_vehicle(vrm):
     return df.to_json(orient="records")
 
 
-
-  
-# Updating and Working | Please test
-
-# show vehicles available for rent (preferably organised per branch)
+# show vehicles available for rent  
+# ###doesn't check if their rented later
 #http://127.0.0.1:5000/vehicle/available
 @app.route('/vehicle/available')
 def get_available_vehicles():
@@ -189,16 +187,72 @@ def get_available_vehicles():
         WHERE s2.vehicle_id = v.vehicle_id
     )
     """
-
     df = pd.read_sql(query, conn)
-
     return df.to_json(orient="records")
 
 
+# show vehicles available for rent filtered by location, type and date to and from.
+# http://127.0.0.1:5000/vehicle/available/search?loc=Bristol&type=Compact&from=2026-09-15&to=2026-09-25
+# http://127.0.0.1:5000/vehicle/available/search?loc=Manchester&type=SUV&from=2026-09-21&to=2026-10-05
+# http://127.0.0.1:5000/vehicle/available/search?loc=Manchester&type=Coupe&from=2026-09-19&to=2026-09-30
+# http://127.0.0.1:5000/vehicle/available/search
+@app.route('/vehicle/available/search')
+def search_available_vehicles():
+    """GETs all available vehicles filtered by location, type, from and to and returns as a JSON.
+    Does this by filtering on the last status before <from> being availabe and there being no status changes between <from> and <to>
+
+    Args (query params):
+        loc (str, optional): Bristol, Manchester, Luton
+        type (str, optional): Compact, Budget, Truck, SUV, Sport, Family, Van, Coupe
+        from (str, optional): start date (YYYY-MM-DD)
+        to (str, optional): end date (YYYY-MM-DD)
+
+    Returns:
+        JSON: JSON object of matching available vehicles
+    """
+    loc = request.args.get('loc')
+    vehicle_type = request.args.get('type')
+    date_from = request.args.get('from', datetime.datetime.today().strftime('%Y-%m-%d'))
+    date_to = request.args.get('to', (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+
+    query = """
+    SELECT
+        v.*,
+        s.status_date_time,
+        s.status_location
+    FROM vehicles v
+    JOIN status s
+        ON v.vehicle_id = s.vehicle_id
+        AND s.status_date_time = (
+            SELECT MAX(s3.status_date_time)
+            FROM status s3
+            WHERE s3.vehicle_id = v.vehicle_id
+            AND s3.status_date_time < ?
+        )
+    WHERE s.status = 'AVAILABLE'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM status s2
+        WHERE s2.vehicle_id = v.vehicle_id
+        AND s2.status_date_time >= ?
+        AND s2.status_date_time <= ?
+    )
+    """
+    params = [date_from, date_from, date_to]
+
+    if loc:
+        query += " AND s.status_location  = ?"
+        params.append(loc)
+
+    if vehicle_type:
+        query += " AND v.category = ?"
+        params.append(vehicle_type)
+
+    df = pd.read_sql(query, conn, params=params)
+    return df.to_json(orient="records")
 
 
 # Updating and Working | Please test
-
 # show vehicles currently rented out (preferably organised per branch)
 #http://127.0.0.1:5000/vehicle/rented
 @app.route('/vehicle/rented')
@@ -211,7 +265,6 @@ def get_rented_vehicles():
     Returns:
         JSON: JSON object containing all rented vehicles in the database
     """
-
     query = """
     SELECT
         latest.status,
@@ -229,16 +282,11 @@ def get_rented_vehicles():
     ) latest
     GROUP BY latest.status
     """
-
     df = pd.read_sql(query, conn)
-
     return df.to_json(orient="records")
 
 
-
-
 # Updating and Working | Please test
-
 # show reports for number of vehicles per branch
 #http://127.0.0.1:5000/reports/branch
 @app.route('/reports/branch')
@@ -251,7 +299,6 @@ def get_branch_report():
     Returns:
         JSON: JSON object containing the number of vehicles per branch in the database
         """
-
     query = """
     SELECT
         latest.status_location,
@@ -269,9 +316,7 @@ def get_branch_report():
     ) latest
     GROUP BY latest.status_location
     """
-
     df = pd.read_sql(query, conn)
-
     return df.to_json(orient="records")
 
 
@@ -287,10 +332,9 @@ def get_status_report():
         JSON: JSON object containing the number of vehicles per status in the database
     """
     query = """SELECT status,COUNT(*) AS totalFROM vehiclesGROUP BY status """
-
     df = pd.read_sql(query,conn)
-
     return df.to_json(orient="records")
+
 
 
 
