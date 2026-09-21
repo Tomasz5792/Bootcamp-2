@@ -158,9 +158,8 @@ def get_vehicle(vrm):
 
 
 
-
-# doesn't work needs updating using status table.  
-# dont use status == AVAILABLE join vehicules to status to get the last status 
+  
+# Updating and Working | Please test
 
 # show vehicles available for rent (preferably organised per branch)
 #http://127.0.0.1:5000/vehicle/available
@@ -174,6 +173,7 @@ def get_available_vehicles():
     Returns:
         JSON: JSON object containing all available vehicles in the database
     """
+<<<<<<< Updated upstream
     df = pd.read_sql(
     """
     SELECT v.*, s.status
@@ -184,13 +184,33 @@ def get_available_vehicles():
     """,
     conn)
     return df.to_json(orient='records')
+=======
+
+    query = """
+    SELECT
+        v.*,
+        s.status
+    FROM vehicles v
+    JOIN status s
+        ON v.vehicle_id = s.vehicle_id
+    WHERE s.status = 'AVAILABLE'
+    AND s.status_date_time =
+    (
+        SELECT MAX(s2.status_date_time)
+        FROM status s2
+        WHERE s2.vehicle_id = v.vehicle_id
+    )
+    """
+
+    df = pd.read_sql(query, conn)
+
+    return df.to_json(orient="records")
+>>>>>>> Stashed changes
 
 
 
 
-# doesn't work needs updating using status table.  
-# dont use status == AVAILABLE join vehicules to status to get the last status 
-# Extension: find availiable over a certion perion of time.
+# Updating and Working | Please test
 
 # show vehicles currently rented out (preferably organised per branch)
 #http://127.0.0.1:5000/vehicle/rented
@@ -204,15 +224,33 @@ def get_rented_vehicles():
     Returns:
         JSON: JSON object containing all rented vehicles in the database
     """
-    df = pd.read_sql("SELECT * FROM vehicles WHERE status='RENTED'",conn)
-    return df.to_json(orient='records')
+
+    query = """
+    SELECT
+        latest.status,
+        COUNT(*) AS total
+    FROM
+    (
+        SELECT *
+        FROM status s
+        WHERE s.status_date_time =
+        (
+            SELECT MAX(s2.status_date_time)
+            FROM status s2
+            WHERE s2.vehicle_id = s.vehicle_id
+        )
+    ) latest
+    GROUP BY latest.status
+    """
+
+    df = pd.read_sql(query, conn)
+
+    return df.to_json(orient="records")
 
 
 
 
-# doesn't work needs updating using status table.  
-# dont use status == AVAILABLE, join vehicules to status and location.
-# Extension: find availiable over a certion perion of time.
+# Updating and Working | Please test
 
 # show reports for number of vehicles per branch
 #http://127.0.0.1:5000/reports/branch
@@ -226,13 +264,27 @@ def get_branch_report():
     Returns:
         JSON: JSON object containing the number of vehicles per branch in the database
         """
+
     query = """
-    SELECT branch,
-           COUNT(*) AS total_vehicles
-    FROM vehicles
-    GROUP BY branch
+    SELECT
+        latest.status_location,
+        COUNT(*) AS total
+    FROM
+    (
+        SELECT *
+        FROM status s
+        WHERE s.status_date_time =
+        (
+            SELECT MAX(s2.status_date_time)
+            FROM status s2
+            WHERE s2.vehicle_id = s.vehicle_id
+        )
+    ) latest
+    GROUP BY latest.status_location
     """
-    df = pd.read_sql(query,conn)
+
+    df = pd.read_sql(query, conn)
+
     return df.to_json(orient="records")
 
 
