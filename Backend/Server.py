@@ -40,9 +40,11 @@ conn = create_database()
 #check_database(conn)  # shows the sql tables for debugging purposes
 
 
-#############
-### Pages ###
-#############
+#################
+#################
+##### Pages #####
+#################
+#################
 
 #Login.html
 #http://127.0.0.1:5000/
