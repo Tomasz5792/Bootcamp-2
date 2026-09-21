@@ -174,8 +174,15 @@ def get_available_vehicles():
     Returns:
         JSON: JSON object containing all available vehicles in the database
     """
-    df = pd.read_sql("SELECT * FROM vehicles WHERE status='AVAILABLE'",conn)
-
+    df = pd.read_sql(
+    """
+    SELECT v.*, s.status
+    FROM vehicles v
+    JOIN status s
+        ON v.vehicle_id = s.vehicle_id
+    WHERE s.status='AVAILABLE'
+    """,
+    conn)
     return df.to_json(orient='records')
 
 
@@ -228,6 +235,23 @@ def get_branch_report():
     df = pd.read_sql(query,conn)
     return df.to_json(orient="records")
 
+
+# Returns a report of the number of vehicles per status and returns as a JSON
+@app.route('/reports/status')
+def get_status_report():
+    """GETs a report of the number of vehicles per status and returns as a JSON
+
+    Args:
+        None
+
+    Returns:
+        JSON: JSON object containing the number of vehicles per status in the database
+    """
+    query = """SELECT status,COUNT(*) AS totalFROM vehiclesGROUP BY status """
+
+    df = pd.read_sql(query,conn)
+
+    return df.to_json(orient="records")
 
 
 
