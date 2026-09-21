@@ -46,7 +46,8 @@ conn = create_database()
 #################
 #################
 
-#Login.html
+
+#homepage
 #http://127.0.0.1:5000/
 @app.route("/")
 def login_page():
@@ -153,16 +154,23 @@ def get_vehicle(vrm):
     Returns:
         JSON: JSON object containing the details of the specific vehicle, else a 404 error.
     """
-    df = pd.read_sql(f"SELECT * FROM vehicles WHERE vrm = '{vrm}'", conn)
-    if df.empty:
-        return jsonify({'error': 'Vehicle not found'}), 404
-    return df.to_json(orient="records")
+
+    vehicle = get_vehicle_by_vrm(vrm)
+
+    if vehicle.empty:
+        return jsonify({
+            "error": "Vehicle not found"
+        }),404
+
+    return vehicle.to_json(
+        orient="records"
+    )
 
 
 # show vehicles available for rent  
 # ###doesn't check if their rented later
 #http://127.0.0.1:5000/vehicle/available
-@app.route('/vehicle/available')
+@app.route('/vehicles/available')
 def get_available_vehicles():
     """GETs all available vehicles and returns as a JSON
 
@@ -175,19 +183,19 @@ def get_available_vehicles():
 
     query = """
     SELECT
-        v.*,
-        s.status
+        v.*
     FROM vehicles v
     JOIN status s
         ON v.vehicle_id = s.vehicle_id
-    WHERE s.status = 'AVAILABLE'
-    AND s.status_date_time =
+    WHERE s.status='AVAILABLE'
+    AND s.status_date_time=
     (
         SELECT MAX(s2.status_date_time)
         FROM status s2
-        WHERE s2.vehicle_id = v.vehicle_id
+        WHERE s2.vehicle_id=v.vehicle_id
     )
     """
+<<<<<<< Updated upstream
     df = pd.read_sql(query, conn)
     return df.to_json(orient="records")
 
@@ -260,8 +268,8 @@ def search_available_vehicles():
 
 # Updating and Working | Please test
 # show vehicles currently rented out (preferably organised per branch)
-#http://127.0.0.1:5000/vehicle/rented
-@app.route('/vehicle/rented')
+#http://127.0.0.1:5000/vehicles/rented
+@app.route('/vehicles/rented')
 def get_rented_vehicles():
     """GETs all rented vehicles and returns as a JSON
 
@@ -273,20 +281,17 @@ def get_rented_vehicles():
     """
     query = """
     SELECT
-        latest.status,
-        COUNT(*) AS total
-    FROM
+        v.*
+    FROM vehicles v
+    JOIN status s
+        ON v.vehicle_id = s.vehicle_id
+    WHERE s.status='RENTED'
+    AND s.status_date_time=
     (
-        SELECT *
-        FROM status s
-        WHERE s.status_date_time =
-        (
-            SELECT MAX(s2.status_date_time)
-            FROM status s2
-            WHERE s2.vehicle_id = s.vehicle_id
-        )
-    ) latest
-    GROUP BY latest.status
+        SELECT MAX(s2.status_date_time)
+        FROM status s2
+        WHERE s2.vehicle_id=v.vehicle_id
+    )
     """
     df = pd.read_sql(query, conn)
     return df.to_json(orient="records")
@@ -307,20 +312,16 @@ def get_branch_report():
         """
     query = """
     SELECT
-        latest.status_location,
+        status_location,
         COUNT(*) AS total
-    FROM
+    FROM status s
+    WHERE s.status_date_time=
     (
-        SELECT *
-        FROM status s
-        WHERE s.status_date_time =
-        (
-            SELECT MAX(s2.status_date_time)
-            FROM status s2
-            WHERE s2.vehicle_id = s.vehicle_id
-        )
-    ) latest
-    GROUP BY latest.status_location
+        SELECT MAX(s2.status_date_time)
+        FROM status s2
+        WHERE s2.vehicle_id=s.vehicle_id
+    )
+    GROUP BY status_location
     """
     df = pd.read_sql(query, conn)
     return df.to_json(orient="records")
@@ -337,10 +338,206 @@ def get_status_report():
     Returns:
         JSON: JSON object containing the number of vehicles per status in the database
     """
-    query = """SELECT status,COUNT(*) AS totalFROM vehiclesGROUP BY status """
-    df = pd.read_sql(query,conn)
+
+    query = """
+    SELECT
+        status,
+        COUNT(*) AS total
+    FROM status s
+    WHERE s.status_date_time=
+    (
+        SELECT MAX(s2.status_date_time)
+        FROM status s2
+        WHERE s2.vehicle_id=s.vehicle_id
+    )
+    GROUP BY status
+    """
+
+    df = pd.read_sql(query, conn)
     return df.to_json(orient="records")
 
+#rent a specific vehicle by registration number (vrm)
+#http://127.0.0.1:5000/vehicles/<vrm>/rent
+@app.route("/vehicles/<vrm>/rent")
+def rent_vehicle(vrm):
+
+    vehicle_id = get_vehicle_id(vrm)
+
+    if vehicle_id is None:
+        return jsonify({
+            "error":"Vehicle not found"
+        }),404
+
+    current_status = get_current_status(
+        vehicle_id
+    )
+
+    if current_status != "AVAILABLE":
+
+        return jsonify({
+            "error":
+            f"Vehicle cannot be rented because status is {current_status}"
+        }),400
+
+    latest = get_latest_status(
+        vehicle_id
+    )
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO status
+        (
+            customer_id,
+            vehicle_id,
+            status_date_time,
+            status_location,
+            status
+        )
+        VALUES
+        (
+            ?, ?, CURRENT_TIMESTAMP, ?, ?
+        )
+        """,
+        (
+            latest.iloc[0]["customer_id"],
+            vehicle_id,
+            latest.iloc[0]["status_location"],
+            "RENTED"
+        )
+    )
+
+    conn.commit()
+
+    return jsonify({"message":"Vehicle rented successfully"})
+
+
+#Return a specific vehicle by registration number (vrm)
+#http://127.0.0.1:5000/vehicles/<vrm>/return
+@app.route("/vehicles/<vrm>/return")
+def return_vehicle(vrm):
+
+    vehicle_id = get_vehicle_id(vrm)
+
+    if vehicle_id is None:
+        return jsonify({
+            "error":"Vehicle not found"
+        }),404
+
+    current_status = get_current_status(
+        vehicle_id
+    )
+
+    if current_status != "RENTED":
+
+        return jsonify({
+            "error":
+            f"Vehicle cannot be returned because status is {current_status}"
+        }),400
+
+    latest = get_latest_status(
+        vehicle_id
+    )
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO status
+        (
+            customer_id,
+            vehicle_id,
+            status_date_time,
+            status_location,
+            status
+        )
+        VALUES
+        (
+            ?, ?, CURRENT_TIMESTAMP, ?, ?
+        )
+        """,
+        (
+            latest.iloc[0]["customer_id"],
+            vehicle_id,
+            latest.iloc[0]["status_location"],
+            "AVAILABLE"
+        )
+    )
+
+    conn.commit()
+
+    return jsonify({
+        "message":"Vehicle returned successfully"
+    })
+
+
+#Delete a specific vehicle by registration number (vrm)
+#http://127.0.0.1:5000/vehicles/<vrm>
+@app.route(
+    "/vehicles/<vrm>",
+    methods=["DELETE"]
+)
+def delete_vehicle(vrm):
+
+    vehicle_id = get_vehicle_id(vrm)
+
+    if vehicle_id is None:
+        return jsonify({
+            "error":"Vehicle not found"
+        }),404
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        DELETE FROM status
+        WHERE vehicle_id = ?
+        """,
+        (vehicle_id,)
+    )
+
+    cursor.execute(
+        """
+        DELETE FROM vehicles
+        WHERE vehicle_id = ?
+        """,
+        (vehicle_id,)
+    )
+
+    conn.commit()
+
+    return jsonify({
+        "message":"Vehicle deleted successfully"
+    })
+
+
+#Get the rental history for a specific vehicle by registration number (vrm)
+#http://127.0.0.1:5000/vehicles/<vrm>/history
+@app.route("/vehicle/<vrm>/history")
+def get_vehicle_history(vrm):
+
+    vehicle_id = get_vehicle_id(vrm)
+
+    if vehicle_id is None:
+        return jsonify({
+            "error": "Vehicle not found"
+        }), 404
+
+    query = """
+    SELECT *
+    FROM status
+    WHERE vehicle_id = ?
+    ORDER BY status_date_time DESC
+    """
+
+    df = pd.read_sql(
+        query,
+        conn,
+        params=(vehicle_id,)
+    )
+
+    return df.to_json(orient="records")
 
 
 
