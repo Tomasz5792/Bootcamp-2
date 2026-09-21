@@ -9,6 +9,7 @@
 </head>
 <body class="bg-gray-100 font-sans antialiased text-gray-800 min-h-screen flex flex-col">
 
+    <!-- Navbar -->
     <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
@@ -23,10 +24,11 @@
         </div>
     </nav>
 
+    <!-- Sign Up Area -->
     <div class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8 space-y-6">
+        <div class="max-w-3xl w-full bg-white rounded-xl shadow-lg p-8">
             
-            <div class="text-center">
+            <div class="text-center mb-8">
                 <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                     <i class="fa-solid fa-user-plus text-blue-600 text-2xl"></i>
                 </div>
@@ -37,38 +39,96 @@
                 </p>
             </div>
 
-            <form class="mt-6 space-y-5" action="/signup" method="POST">
-                <div>
-                    <label for="fullname" class="block text-sm font-medium text-gray-700">Full Name</label>
-                    <div class="mt-1 relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-id-card text-gray-400"></i>
-                        </div>
-                        <input id="fullname" name="fullname" type="text" required class="pl-10 w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
+            <form class="space-y-6" action="/signup" method="POST">
+                
+                <!-- 2-Column Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- First Name -->
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input id="first_name" name="first_name" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="John">
+                    </div>
+
+                    <!-- Last Name -->
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input id="last_name" name="last_name" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="Doe">
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div>
+                        <label for="dob" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                        <input id="dob" name="dob" type="date" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
+                    </div>
+
+                    <!-- Gender -->
+                    <div>
+                        <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                        <select id="gender" name="gender" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
+                            <option value="" disabled selected>Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="md:col-span-2">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input id="email" name="email" type="email" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="example@email.com">
+                    </div>
+
+                    <!-- Address -->
+                    <div class="md:col-span-2">
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <input id="address" name="address" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="123 Main St">
+                    </div>
+
+                    <!-- City -->
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <input id="city" name="city" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="London">
+                    </div>
+
+                    <!-- Country -->
+                    <div>
+                        <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <input id="country" name="country" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="United Kingdom">
+                    </div>
+
+                    <!-- Driving License Number -->
+                    <div>
+                        <label for="drivingLicenseNumber" class="block text-sm font-medium text-gray-700 mb-1">Driving License Number</label>
+                        <input id="drivingLicenseNumber" name="drivingLicenseNumber" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
+                    </div>
+
+                    <!-- Passport Number -->
+                    <div>
+                        <label for="passportNumber" class="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
+                        <input id="passportNumber" name="passportNumber" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
+                    </div>
+
+                    <!-- License Restrictions -->
+                    <div class="md:col-span-2">
+                        <label for="LicenseRetrictions" class="block text-sm font-medium text-gray-700 mb-1">License Restrictions (if any)</label>
+                        <input id="LicenseRetrictions" name="LicenseRetrictions" type="text" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="e.g. Glasses required, Automatic only">
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input id="password" name="password" type="password" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="••••••••">
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div>
+                        <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                        <input id="confirm_password" name="confirm_password" type="password" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="••••••••">
                     </div>
                 </div>
 
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-                    <div class="mt-1 relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-envelope text-gray-400"></i>
-                        </div>
-                        <input id="email" name="email" type="email" required class="pl-10 w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <div class="mt-1 relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-lock text-gray-400"></i>
-                        </div>
-                        <input id="password" name="password" type="password" required class="pl-10 w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
-                    </div>
-                </div>
-
-                <div class="pt-2">
+                <div class="pt-4 border-t border-gray-200 mt-6">
                     <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition">
                         Create Account
                     </button>
