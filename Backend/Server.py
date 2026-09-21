@@ -180,7 +180,6 @@ def get_available_vehicles():
     Returns:
         JSON: JSON object containing all available vehicles in the database
     """
-
     query = """
     SELECT
         v.*
@@ -195,7 +194,6 @@ def get_available_vehicles():
         WHERE s2.vehicle_id=v.vehicle_id
     )
     """
-<<<<<<< Updated upstream
     df = pd.read_sql(query, conn)
     return df.to_json(orient="records")
 
