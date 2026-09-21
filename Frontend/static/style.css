@@ -1,0 +1,183 @@
+/* Updated Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.auth-buttons a {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+}
+
+.btn-login {
+    background-color: transparent;
+    border: 1px solid #ecf0f1;
+}
+
+.btn-signup {
+    background-color: #e67e22;
+    color: white !important;
+}
+
+/* Hero Section & Booking Form */
+.hero-section {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.hero-text h1 {
+    color: white;
+    border: none;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.booking-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    color: #333;
+}
+
+.booking-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    flex: 1;
+    min-width: 200px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #7f8c8d;
+}
+
+.form-group input, .form-group select {
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.btn-search {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    height: 43px;
+    width: 100%;
+}
+
+.btn-search:hover {
+    background-color: #2ecc71;
+}
+/* Featured Fleet Section */
+.featured-fleet {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.featured-fleet h2 {
+    margin-bottom: 30px;
+    color: #2c3e50;
+    font-size: 2rem;
+}
+
+.fleet-grid {
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.car-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    width: 300px;
+    text-align: left;
+    transition: transform 0.3s ease;
+}
+
+.car-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.car-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 3px solid #3498db;
+}
+
+.car-details {
+    padding: 20px;
+}
+
+.car-details h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.3rem;
+}
+
+.car-details p {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.car-price {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #27ae60;
+    margin-bottom: 15px;
+}
+
+.car-price span {
+    font-size: 0.9rem;
+    color: #95a5a6;
+    font-weight: normal;
+}
+
+.btn-rent {
+    display: block;
+    text-align: center;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.btn-rent:hover {
+    background-color: #2980b9;
+}

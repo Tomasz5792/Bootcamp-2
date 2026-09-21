@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rentals | Home</title>
+    <!-- Calea către CSS este acum relativă la folderul Frontend -->
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="vehicles.html">Fleet</a>
+                <a href="customers.html">Customers</a>
+            </div>
+            <div class="auth-buttons">
+                <a href="login.html" class="btn-login">Log In</a>
+                <a href="signup.html" class="btn-signup">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="hero-section">
+            <div class="hero-text">
+                <h1>Find the perfect car for your journey</h1>
+                <p>Book simply and quickly, with no hidden fees.</p>
+            </div>
+
+            <div class="booking-container">
+                <form class="booking-form" action="#" method="GET">
+                    <div class="form-group">
+                        <label for="car_type">Select Car</label>
+                        <select id="car_type" name="car_type">
+                            <option value="any">Any Model</option>
+                            <option value="compact">Honda Civic 1.8 (Compact)</option>
+                            <option value="suv">Volvo XC90 (SUV / Family)</option>
+                            <option value="premium">Premium Class</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pickup_date">Pick-up Date</label>
+                        <input type="date" id="pickup_date" name="pickup_date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="return_date">Return Date</label>
+                        <input type="date" id="return_date" name="return_date" required>
+                    </div>
+                    
+                    <div class="form-group button-group">
+                        <button type="submit" class="btn-search">Check Availability</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Featured Fleet Section -->
+        <section class="featured-fleet">
+            <h2>Our Top Vehicles</h2>
+            <div class="fleet-grid">
+                
+                <!-- Car Card 1 -->
+                <div class="car-card">
+                    <!-- Image sourced from Unsplash for placeholder -->
+                    <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600&auto=format&fit=crop" alt="Honda Civic 1.8">
+                    <div class="car-details">
+                        <h3>Honda Civic 1.8</h3>
+                        <p>Compact • Petrol • i-Shift</p>
+                        <div class="car-price">£35 <span>/ day</span></div>
+                        <a href="vehicles.html" class="btn-rent">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Car Card 2 -->
+                <div class="car-card">
+                    <img src="https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?q=80&w=600&auto=format&fit=crop" alt="Volvo XC90">
+                    <div class="car-details">
+                        <h3>Volvo XC90</h3>
+                        <p>SUV • Premium • 7 Seats</p>
+                        <div class="car-price">£85 <span>/ day</span></div>
+                        <a href="vehicles.html" class="btn-rent">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Car Card 3 -->
+                <div class="car-card">
+                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=600&auto=format&fit=crop" alt="Mercedes E-Class">
+                    <div class="car-details">
+                        <h3>Mercedes E-Class</h3>
+                        <p>Luxury • Automatic • 5 Seats</p>
+                        <div class="car-price">£110 <span>/ day</span></div>
+                        <a href="vehicles.html" class="btn-rent">Book Now</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+</body>
+</html>

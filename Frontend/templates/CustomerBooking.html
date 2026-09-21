@@ -1,28 +1,220 @@
-<!-- http://127.0.0.1:5000/booking -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Booking Page</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Car - AutoRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-  <body>
-    <header>
-      <h1>Booking Page</h1>
-    </header>
-    <main>
-      <section>
-        <h2>Welcome to the Booking Page</h2>
-        <p>This is the booking page of the website.</p>
-      </section>
+<body class="bg-gray-50 font-sans antialiased text-gray-800 min-h-screen flex flex-col">
 
-      <section>
-        <h2>Other pages</h2>
-        <button onclick="window.location.href='/';">Home</button>
-      </section>
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo -->
+                <a href="/home" class="flex-shrink-0 flex items-center hover:opacity-80 transition">
+                    <i class="fa-solid fa-car-side text-blue-600 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-gray-900 tracking-tight">Auto<span class="text-blue-600">Rent</span></span>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="/home" class="text-gray-500 hover:text-blue-600 font-medium transition">Dashboard</a>
+                    <a href="/booking" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Book a Car</a>
+                    <a href="#" class="text-gray-500 hover:text-blue-600 font-medium transition">My History</a>
+                </div>
 
+                <!-- User Profile & Logout -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center text-sm font-medium text-gray-700">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <span class="hidden sm:inline-block">Client</span>
+                    </div>
+                    <a href="/" class="text-gray-500 hover:text-red-600 transition" title="Log Out">
+                        <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Layout -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex flex-col lg:flex-row gap-8">
+        
+        <!-- Filters Sidebar -->
+        <aside class="w-full lg:w-1/4">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-gray-900">Filters</h2>
+                    <button class="text-sm text-blue-600 hover:underline">Clear all</button>
+                </div>
+                
+                <form action="/booking" method="GET">
+                    <!-- Search by Location -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                        <select class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none transition">
+                            <option value="Bucuresti">Bucharest - Otopeni</option>
+                            <option value="Cluj">Cluj-Napoca</option>
+                            <option value="Timisoara">Timisoara</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Dates</label>
+                        <input type="date" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none transition">
+                        <input type="date" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none transition">
+                    </div>
+
+                    <!-- Car Category -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">Compact</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">Sedan</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">SUV</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">Luxury</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition">
+                        Apply Filters
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Car Listings Grid -->
+        <section class="w-full lg:w-3/4">
+            
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">Available Vehicles</h1>
+                <span class="text-sm text-gray-500">Showing results</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Car Card 1 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition">
+                    <img src="https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=2069&auto=format&fit=crop" alt="Compact Car" class="h-48 w-full object-cover">
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-gray-900">Toyota Corolla</h3>
+                                <span class="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded">Compact</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-600 mb-4">
+                                <div><i class="fa-solid fa-users text-gray-400 w-5"></i> 5 Seats</div>
+                                <div><i class="fa-solid fa-suitcase text-gray-400 w-5"></i> 2 Bags</div>
+                                <div><i class="fa-solid fa-gear text-gray-400 w-5"></i> Automatic</div>
+                                <div><i class="fa-solid fa-snowflake text-gray-400 w-5"></i> A/C</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4 mt-2">
+                            <div>
+                                <span class="text-2xl font-bold text-blue-600">£45</span>
+                                <span class="text-sm text-gray-500">/day</span>
+                            </div>
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Card 2 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition">
+                    <img src="https://images.unsplash.com/photo-1550426735-c33c7ec32050?q=80&w=2070&auto=format&fit=crop" alt="Sedan Car" class="h-48 w-full object-cover">
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-gray-900">Volkswagen Passat</h3>
+                                <span class="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded">Sedan</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-600 mb-4">
+                                <div><i class="fa-solid fa-users text-gray-400 w-5"></i> 5 Seats</div>
+                                <div><i class="fa-solid fa-suitcase text-gray-400 w-5"></i> 4 Bags</div>
+                                <div><i class="fa-solid fa-gear text-gray-400 w-5"></i> Automatic</div>
+                                <div><i class="fa-solid fa-snowflake text-gray-400 w-5"></i> A/C</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4 mt-2">
+                            <div>
+                                <span class="text-2xl font-bold text-blue-600">£65</span>
+                                <span class="text-sm text-gray-500">/day</span>
+                            </div>
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Card 3 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition">
+                    <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=2070&auto=format&fit=crop" alt="SUV" class="h-48 w-full object-cover">
+                    <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-gray-900">Volvo XC90</h3>
+                                <span class="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded">SUV</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-600 mb-4">
+                                <div><i class="fa-solid fa-users text-gray-400 w-5"></i> 7 Seats</div>
+                                <div><i class="fa-solid fa-suitcase text-gray-400 w-5"></i> 5 Bags</div>
+                                <div><i class="fa-solid fa-gear text-gray-400 w-5"></i> Automatic</div>
+                                <div><i class="fa-solid fa-snowflake text-gray-400 w-5"></i> A/C</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4 mt-2">
+                            <div>
+                                <span class="text-2xl font-bold text-blue-600">£110</span>
+                                <span class="text-sm text-gray-500">/day</span>
+                            </div>
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Pagination -->
+            <div class="mt-8 flex justify-center">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Previous</span>
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+                    <a href="#" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">1</a>
+                    <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">2</a>
+                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Next</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </nav>
+            </div>
+
+        </section>
     </main>
-  </body>
+
+</body>
 </html>
