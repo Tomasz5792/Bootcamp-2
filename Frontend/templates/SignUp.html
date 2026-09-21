@@ -1,28 +1,27 @@
-<!-- http://127.0.0.1:5000/ -->
+<!-- http://127.0.0.1:5000/signup -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login Page</title>
+  <title>Sign Up Page</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
   <body>
     <header>
-      <h1>Login Page</h1>
+      <h1>Sign Up Page</h1>
     </header>
     <main>
       <section>
-        <h2>Welcome to the Login Page</h2>
+        <h2>Welcome to the Sign Up Page</h2>
         <button onclick="window.location.href='/login';">Login</button>
         <button onclick="window.location.href='/register';">Register</button>
       </section>
       <section>
-        <h2>Testing, Delete later</h2>
+        <h2>Other Pages</h2>
         <button onclick="window.location.href='/home';">Customer Home</button>
         <button onclick="window.location.href='/staffhome';">Staff Home</button>
-        <button onclick="window.location.href='/signup';">Customer Signup</button>
       </section>
     </main>
   </body>

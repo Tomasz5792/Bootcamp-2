@@ -1,27 +1,27 @@
-<!-- http://127.0.0.1:5000/staffhome -->
+<!-- http://127.0.0.1:5000/staff/reports -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Staff Home</title>
+  <title>Staff Reports</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
   <body>
     <header>
-      <h1>Staff Home</h1>
+      <h1>Staff Reports</h1>
     </header>
     <main>
       <section>
-        <h2>Welcome to the Staff Home Page</h2>
-        <p>This is the staff home page of the website.</p>
+        <h2>Welcome to the Staff Reports Page</h2>
+        <p>This is the staff reports page of the website.</p>
       </section>
 
       <section>
         <h2>Other pages</h2>
-        <button onclick="window.location.href='/staff/rental';">Rental</button>
-        <button onclick="window.location.href='/staff/reports';">Reports</button>
+        <button onclick="window.location.href='/staffhome';">Staff Home</button>
+        <button onclick="window.location.href='/staff/rental';">Staff Rental</button>
       </section>
 
       <section> 

@@ -39,15 +39,65 @@ conn = create_database()
 #check_database(conn)  # shows the sql tables for debugging purposes
 
 
-
-
-#Pages
+#############
+### Pages ###
+#############
 
 #homepage
+#Login.html
 #http://127.0.0.1:5000/
 @app.route("/")
 def login_page():
     return render_template("Login.html")
+
+#signup page
+#SignUp.html
+#http://127.0.0.1:5000/signup
+@app.route("/signup")
+def signup_page():
+    return render_template("SignUp.html")
+
+
+#CustomerHome.html
+#customer home page
+#http://127.0.0.1:5000/home
+@app.route("/home")
+def customer_home():
+    return render_template("CustomerHome.html")
+
+#customer booking page
+#CustomerBooking.html
+#http://127.0.0.1:5000/booking
+@app.route("/booking")
+def customer_booking():
+    return render_template("CustomerBooking.html")
+
+
+#staff home page
+#StaffHome copy.html
+#http://127.0.0.1:5000/staffhome
+@app.route("/staffhome")
+def staff_home():
+    return render_template("StaffHome.html")
+
+#staff rental page
+#StaffRental.html
+#http://127.0.0.1:5000/staff/rental
+@app.route("/staff/rental")
+def staff_rental():
+    return render_template("StaffRental.html")
+
+#staff reports page
+#StaffReports.html
+#http://127.0.0.1:5000/staff/reports
+@app.route("/staff/reports")
+def staff_reports():
+    return render_template("StaffReports.html")
+
+
+##################################################
+### Test Pages for API testing and development ###
+##################################################
 
 #test page
 #http://127.0.0.1:5000/test
@@ -61,22 +111,12 @@ def test_page():
 def test_pageHTTPRequest():
     return render_template("test/TestHTTPRequest.html")
 
-#customer home page
-#http://127.0.0.1:5000/home
-@app.route("/home")
-def customer_home():
-    return render_template("CustomerHome.html")
-
-#staff home page
-#http://127.0.0.1:5000/staffhome
-@app.route("/staffhome")
-def staff_home():
-    return render_template("StaffHome.html")
 
 
 
-
-#API json endpoints
+##########################
+### API json endpoints ###
+##########################
 
 # show all vehicles
 #http://127.0.0.1:5000/vehicles
