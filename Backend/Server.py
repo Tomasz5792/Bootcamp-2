@@ -43,11 +43,26 @@ conn = create_database()
 ### Pages ###
 #############
 
+#Login.html
+#http://127.0.0.1:5000/
+@app.route("/homelogin")
+def login_page():
+    return render_template("HomeLogin.html")
+
+#signup page
+#SignUp.html
+#http://127.0.0.1:5000/signup
+@app.route("/signup")
+def signup_page():
+    return render_template("SignUp.html")
+
+
+
 #homepage
 #CustomerHome.html
 #customer home page
 #http://127.0.0.1:5000/home
-@app.route("/")
+@app.route("/home")
 def customer_home():
     return render_template("CustomerHome.html")
 
@@ -58,19 +73,6 @@ def customer_home():
 def customer_booking():
     return render_template("CustomerBooking.html")
 
-
-#Login.html
-#http://127.0.0.1:5000/
-@app.route("/login")
-def login_page():
-    return render_template("Login.html")
-
-#signup page
-#SignUp.html
-#http://127.0.0.1:5000/signup
-@app.route("/signup")
-def signup_page():
-    return render_template("SignUp.html")
 
 
 #staff home page
