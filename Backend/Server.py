@@ -266,7 +266,7 @@ def search_available_vehicles():
 
 # Updating and Working | Please test
 # show vehicles currently rented out (preferably organised per branch)
-#http://127.0.0.1:5000/vehicles/rented
+# http://127.0.0.1:5000/vehicles/rented
 @app.route('/vehicles/rented')
 def get_rented_vehicles():
     """GETs all rented vehicles and returns as a JSON
@@ -297,7 +297,7 @@ def get_rented_vehicles():
 
 # Updating and Working | Please test
 # show reports for number of vehicles per branch
-#http://127.0.0.1:5000/reports/branch
+# http://127.0.0.1:5000/reports/branch
 @app.route('/reports/branch')
 def get_branch_report():
     """GETs a report of the number of vehicles per branch and returns as a JSON
@@ -354,8 +354,9 @@ def get_status_report():
     df = pd.read_sql(query, conn)
     return df.to_json(orient="records")
 
-#rent a specific vehicle by registration number (vrm)
-#http://127.0.0.1:5000/vehicles/<vrm>/rent
+# rent a specific vehicle by registration number (vrm)
+# http://127.0.0.1:5000/vehicles/<vrm>/rent
+# http://127.0.0.1:5000/vehicles/JA82VXV/rent
 @app.route("/vehicles/<vrm>/rent")
 def rent_vehicle(vrm):
 
@@ -411,8 +412,9 @@ def rent_vehicle(vrm):
     return jsonify({"message":"Vehicle rented successfully"})
 
 
-#Return a specific vehicle by registration number (vrm)
-#http://127.0.0.1:5000/vehicles/<vrm>/return
+# Return a specific vehicle by registration number (vrm)
+# http://127.0.0.1:5000/vehicles/<vrm>/return
+# http://127.0.0.1:5000/vehicles/JA82VXV/return
 @app.route("/vehicles/<vrm>/return")
 def return_vehicle(vrm):
 
