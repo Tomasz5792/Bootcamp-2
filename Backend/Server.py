@@ -125,6 +125,57 @@ def test_pageHTTPRequest():
 ##############################
 ##############################
 
+####################
+# Helper Functions #
+####################
+
+def get_vehicle_by_vrm(vrm):
+    query = """
+    SELECT *
+    FROM vehicles
+    WHERE UPPER(vrm) = UPPER(?)
+    """
+    df = pd.read_sql(
+        query,
+        conn,
+        params=(vrm,)
+    )
+    return df
+
+
+def get_vehicle_id(vrm):
+    vehicle = get_vehicle_by_vrm(vrm)
+    if vehicle.empty:
+        return None
+    return int(
+        vehicle.iloc[0]["vehicle_id"]
+    )
+
+
+def get_latest_status(vehicle_id):
+    query = """
+    SELECT *
+    FROM status
+    WHERE vehicle_id = ?
+    ORDER BY status_date_time DESC
+    LIMIT 1
+    """
+    df = pd.read_sql(
+        query,
+        conn,
+        params=(vehicle_id,)
+    )
+    return df
+
+
+def get_current_status(vehicle_id):
+    latest = get_latest_status(vehicle_id)
+    if latest.empty:
+        return None
+    return latest.iloc[0]["status"]
+
+
+
 # show all vehicles
 #http://127.0.0.1:5000/vehicles
 @app.route("/vehicles")
@@ -168,8 +219,8 @@ def get_vehicle(vrm):
 
 
 # show vehicles available for rent  
-# ###doesn't check if their rented later
-#http://127.0.0.1:5000/vehicle/available
+### doesn't check if their rented later
+# http://127.0.0.1:5000/vehicle/available
 @app.route('/vehicles/available')
 def get_available_vehicles():
     """GETs all available vehicles and returns as a JSON
