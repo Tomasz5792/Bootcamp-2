@@ -36,10 +36,6 @@ app = Flask(__name__)
 conn = create_database()
 #check_database(conn)  # shows the sql tables for debugging purposes
 
-########################
-### Helper Functions ###
-########################
-
 # -----------------------------
 # Helper Functions
 # -----------------------------
