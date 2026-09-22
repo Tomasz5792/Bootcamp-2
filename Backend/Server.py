@@ -50,8 +50,14 @@ conn = create_database()
 #homepage
 #http://127.0.0.1:5000/
 @app.route("/")
-def login_page():
+def home_page():
     return render_template("Home.html")
+
+#homepage
+#http://127.0.0.1:5000/login
+@app.route("/login")
+def login_page():
+    return render_template("Login.html")
 
 #signup page
 #SignUp.html
@@ -62,7 +68,7 @@ def signup_page():
 
 
 
-#homepage
+#customer homepage
 #CustomerHome.html
 #customer home page
 #http://127.0.0.1:5000/home
@@ -574,22 +580,56 @@ def get_vehicle_history(vrm):
         return jsonify({
             "error": "Vehicle not found"
         }), 404
-
     query = """
     SELECT *
     FROM status
     WHERE vehicle_id = ?
     ORDER BY status_date_time DESC
     """
-
     df = pd.read_sql(
         query,
         conn,
         params=(vehicle_id,)
     )
-
     return df.to_json(orient="records")
 
+# api call to give all locations
+# http://127.0.0.1:5000/vehicle/locations
+@app.route("/vehicle/locations")
+def get_vehicle_locations():
+    """GETs all vehicle locations
+
+    Args:
+        None
+
+    Returns:
+        JSON: JSON object containing all vehicle locations
+    """
+    query = """
+    SELECT DISTINCT status_location
+    FROM status
+    """
+    df = pd.read_sql(query, conn)
+    return df.to_json(orient="records")
+
+#api coll to give vehicule types
+# http://127.0.0.1:5000/vehicle/types
+@app.route("/vehicle/types")
+def get_vehicle_types():
+    """GETs all vehicle types
+
+    Args:
+        None
+
+    Returns:
+        JSON: JSON object containing all vehicle types
+    """
+    query = """
+    SELECT DISTINCT category
+    FROM vehicles
+    """
+    df = pd.read_sql(query, conn)
+    return df.to_json(orient="records")
 
 
 if __name__ == "__main__":
