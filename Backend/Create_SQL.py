@@ -6,6 +6,7 @@ from flask import app
 import pandas as pd
 import random # for geting a random customer
 import datetime
+from Security import create_api_key, create_hashed_password
 
 def create_database():
     """Creates in-memory SQLite databases and populates them with data from CSV files.  
@@ -50,10 +51,9 @@ def create_database():
         )
     ''')
 
+    # get customer id's to randomly asign to the status table
     cursor.execute("SELECT customerId FROM customers")
     customer_ids = [row[0] for row in cursor.fetchall()]
-
-
 
     #adding vehicle data into the status table
     for index, row in vehicles.iterrows():
@@ -72,7 +72,63 @@ def create_database():
         "VALUES (?, ?, ?, ?, ?)",
         (customer_id, vehicle_id, status_date_time, status_location, status)
     )
-            
+
+
+    # need to create a security / api table
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE security (
+            security_id INTEGER PRIMARY KEY,
+            role TEXT CHECK(role IN ('CUSTOMER', 'STAFF')),
+            customer_id INTEGER,
+            username TEXT,
+            password_hash TEXT,
+            apikey TEXT
+        )
+    ''')
+
+    # adding staff and creating passwordhashes and keys
+    print("adding staff:", end=" ")
+
+    for index in range(1,5):
+
+        print(index,end=" ")
+
+        role = "STAFF"
+        customer_id = None
+        username = f"staff{index}"
+        password_hash = create_hashed_password("password")
+        apikey = create_api_key()
+
+        cursor.execute(
+        "INSERT INTO security (role, customer_id, username, password_hash, apikey) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (role, customer_id, username, password_hash, apikey)
+    )
+
+
+    # adding customers and creating passwordhashes and keys
+    print("")
+    print("adding customers:", end=" ")
+
+    for index, row in customers.head(10).iterrows():
+
+        print(index,end=" ")
+
+        role = "CUSTOMER"
+        customer_id = int(row['customerId'])
+        username = row['email']
+        password_hash = create_hashed_password("password")
+        apikey = create_api_key()
+
+        cursor.execute(
+        "INSERT INTO security (role, customer_id, username, password_hash, apikey) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (role, customer_id, username, password_hash, apikey)
+        )
+        
+        
+
     #drop status column from vehicles table
     cursor.execute("ALTER TABLE vehicles DROP COLUMN status")
     cursor.execute("ALTER TABLE vehicles DROP COLUMN branch")
@@ -83,10 +139,12 @@ def create_database():
     vehicles_df = pd.read_sql('SELECT * FROM vehicles', conn)
     customers_df = pd.read_sql('SELECT * FROM customers', conn)
     status_df = pd.read_sql('SELECT * FROM status', conn)
+    security_df = pd.read_sql('SELECT * FROM security', conn)
 
     vehicles_df.to_csv('Data/current/vehicles_export.csv', index=False)
     customers_df.to_csv('Data/current/customers_export.csv', index=False)
     status_df.to_csv('Data/current/status_export.csv', index=False)
+    security_df.to_csv('Data/current/security_export.csv', index=False)
 
     return conn
 
@@ -101,6 +159,9 @@ def check_database(conn):
 
     print("\nstatus:")
     print(pd.read_sql('SELECT * FROM status LIMIT 10', conn))
+
+    print("\nsecurity:")
+    print(pd.read_sql('SELECT * FROM security LIMIT 10', conn))
 
 
 if __name__ == "__main__":

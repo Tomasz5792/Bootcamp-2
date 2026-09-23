@@ -4,36 +4,19 @@
 import json
 import os
 import uuid
-
-
+from werkzeug.security import generate_password_hash
 
 # url for website
-url = "http://localhost:5000/hello"
+#url = "http://localhost:5000/hello" # I dont think this is needed anymore
 
-#http://127.0.0.1:5000/hello?api_key=2eb95082-82ca-42e6-8eb9-d79ffc872a5c
-
-def get_api_key():
-    """Reads the api key from the api json
-
-    Args:
-        none
-
-    Returns:
-        str: The api key.
-    """
-    filepath = os.path.join(os.path.dirname(__file__), '..', 'security/apikey.json')
-    print(f'Filepath: {filepath}')
-
-    with open(filepath, 'r') as f:
-        api_key = json.load(f)['apikey']
-        print(f'api_key: {api_key}')
-        return api_key
-
-api_key = get_api_key()
+# JSON file path
+filepath = os.path.join(os.path.dirname(__file__), 'apikey.json')
+#filepath = os.path.join(os.path.dirname(__file__), '..', 'security/apikey.json') old filepath
+print(f'Filepath: {filepath}')
 
 
 #generate random api key
-def generate_api_key():
+def create_api_key():
     """Generates a random API key using UUID4.
 
     Args:
@@ -57,17 +40,47 @@ def create_api_key_file(apikey):
         text file (json): A text file with the JSON in it.
     """
     data_to_write = {'apikey': apikey}
-    filepath = os.path.join(os.path.dirname(__file__), 'apikey.json')
     with open(filepath, 'w') as outfile:
         json.dump(data_to_write, outfile)
 
 
+def get_api_key():
+    """Reads the api key from the api json
+
+    Args:
+        none
+
+    Returns:
+        str: The api key.
+    """
+    with open(filepath, 'r') as f:
+        api_key = json.load(f)['apikey']
+        return api_key
+    
+
+def create_hashed_password(password):
+    """Takes a password and hashes it for storage
+
+    Args:
+        password (str): individuals password
+
+    Returns:
+        str: The password hashed
+    """
+    #hashed_password = generate_password_hash(password)
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+    return hashed_password
+
+
 # stops from running if function is ran from other process
 if __name__ == "__main__":
-    get_api_key()
-    api_key = generate_api_key()
-    print(api_key)
-    create_api_key_file(api_key)
+    api_key = create_api_key()
+    print(f'generated api_key: {api_key}')
+    hashed_password = create_hashed_password("password")
+    print(f'generated hashed_password: {hashed_password}')
+    #create_api_key_file(api_key)
+    #get_api_key()
+
 
 
 #print(f"Authenticated link: {url}?api_key={api_key}")
