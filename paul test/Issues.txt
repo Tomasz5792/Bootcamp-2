@@ -1,7 +1,0 @@
-I got to the point when I had to log cars in and out and found that I couldn't reliably with csv or jsons
-Changed id to vehicle_id in vehcule csv
-
-data is a mess it needs to be split into sql tables to make sense
-
-Javascript isn't as human readable as python
-

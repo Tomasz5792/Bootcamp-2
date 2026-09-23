@@ -1,5 +1,0 @@
-$kind: http-request
-description: 'Generates a report of vehicles grouped by branch location. Use this request to see how the fleet is distributed across different Car-Go Rentals branches, helping with logistics and branch-level inventory management.'
-url: ""
-method: GET
-order: 4249424953146838
