@@ -488,6 +488,171 @@ def get_vehicle_history(vrm):
 
     return df.to_json(orient="records")
 
+<<<<<<< Updated upstream
+=======
+# api call to give all locations
+# http://127.0.0.1:5000/vehicle/locations
+@app.route("/vehicle/locations")
+def get_vehicle_locations():
+    """GETs all vehicle locations
+
+    Args:
+        None
+
+    Returns:
+        JSON: JSON object containing all vehicle locations
+    """
+    query = """
+    SELECT DISTINCT status_location
+    FROM status
+    """
+    df = pd.read_sql(query, conn)
+    return df.to_json(orient="records")
+
+#api call to give vehicule types
+# http://127.0.0.1:5000/vehicle/types
+@app.route("/vehicle/types")
+def get_vehicle_types():
+    """GETs all vehicle types
+
+    Args:
+        None
+
+    Returns:
+        JSON: JSON object containing all vehicle types
+    """
+    query = """
+    SELECT DISTINCT category
+    FROM vehicles
+    """
+    df = pd.read_sql(query, conn)
+    return df.to_json(orient="records")
+
+# Add a new vehicle to the rental fleet
+# http://127.0.0.1:5000/vehicles
+@app.route("/vehicles", methods=["POST"])
+def add_vehicle():
+
+    data = request.get_json()
+
+    required_fields = [
+        "make",
+        "model",
+        "colour",
+        "vin",
+        "year",
+        "vrm",
+        "category",
+        "numberSeats",
+        "dayRate",
+        "fuelEconomy"
+    ]
+
+    for field in required_fields:
+
+        if field not in data:
+
+            return jsonify({
+                "error": f"Missing field: {field}"
+            }), 400
+
+    # Check VRM doesn't already exist
+
+    existing_vehicle = pd.read_sql(
+        """
+        SELECT *
+        FROM vehicles
+        WHERE UPPER(vrm) = UPPER(?)
+        """,
+        conn,
+        params=(data["vrm"],)
+    )
+
+    if not existing_vehicle.empty:
+
+        return jsonify({
+            "error": "Vehicle already exists"
+        }), 400
+
+    cursor = conn.cursor()
+
+    # Insert vehicle
+
+    cursor.execute(
+        """
+        INSERT INTO vehicles
+        (
+            make,
+            model,
+            colour,
+            vin,
+            year,
+            vrm,
+            category,
+            numberSeats,
+            dayRate,
+            fuelEconomy
+        )
+        VALUES
+        (
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        )
+        """,
+        (
+            data["make"],
+            data["model"],
+            data["colour"],
+            data["vin"],
+            data["year"],
+            data["vrm"],
+            data["category"],
+            data["numberSeats"],
+            data["dayRate"],
+            data["fuelEconomy"]
+        )
+    )
+
+    conn.commit()
+
+    # Retrieve newly-created vehicle
+
+    vehicle_id = cursor.lastrowid
+
+    # Create initial status record
+
+    cursor.execute(
+    """
+    INSERT INTO status
+    (
+        customer_id,
+        vehicle_id,
+        status_date_time,
+        status_location,
+        status
+    )
+    VALUES
+    (
+        NULL,
+        ?,
+        CURRENT_TIMESTAMP,
+        ?,
+        'AVAILABLE'
+    )
+    """,
+    (
+        vehicle_id,
+        data["branch"]
+    )
+)
+
+    conn.commit()
+
+    return jsonify({
+        "message": "Vehicle added successfully",
+        "vehicle_id": vehicle_id
+    }), 201
+
+>>>>>>> Stashed changes
 if __name__ == "__main__":
     app.run(debug=True)
     

@@ -73,6 +73,7 @@ def check_database(conn):
     print("\nRentals:")
     print(pd.read_sql('SELECT * FROM rentals LIMIT 5', conn))
 
+    print(pd.read_sql('SELECT * FROM vehicles LIMIT 1', conn).columns.tolist())
 
 if __name__ == "__main__":
     conn = create_database()
