@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - AutoRent</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800 min-h-screen flex flex-col justify-center py-10">
+
+    <div class="max-w-4xl mx-auto w-full px-4 sm:px-6">
+        
+        <!-- Brand Logo & Header Section -->
+        <div class="text-center mb-8">
+            <a href="/" class="inline-flex items-center hover:opacity-80 transition">
+                <i class="fa-solid fa-car-side text-blue-600 text-4xl mr-3"></i>
+                <span class="text-4xl font-bold text-gray-900">Auto<span class="text-blue-600">Rent</span></span>
+            </a>
+            <h2 class="text-2xl font-bold text-gray-900 mt-6">Create your account</h2>
+            <p class="text-gray-500 mt-2">Join us to book your premium vehicle today.</p>
+        </div>
+
+        <!-- Registration Form Card Container -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div class="p-8 sm:p-10">
+                
+                <!-- Dynamic Error or Success Message Display Banner -->
+                <div id="msg-banner" class="hidden mb-6 p-4 rounded-lg font-medium text-center"></div>
+
+                <form id="signup-form" class="space-y-6">
+                    
+                    <!-- Section: Personal Details -->
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2">
+                        <i class="fa-solid fa-user text-blue-500 mr-2"></i>Personal Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">First Name</label>
+                            <input type="text" name="first_name" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Last Name</label>
+                            <input type="text" name="last_name" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Date of Birth</label>
+                            <input type="date" name="dob" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Gender</label>
+                            <select name="gender" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                                <option value="" disabled selected>Select gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other / Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Section: Contact & Location Information -->
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2 pt-4">
+                        <i class="fa-solid fa-envelope text-blue-500 mr-2"></i>Contact & Location
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                            <input type="email" name="email" required placeholder="you@example.com" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Address</label>
+                            <input type="text" name="address" required placeholder="123 Main St" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">City</label>
+                            <input type="text" name="city" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Country</label>
+                            <input type="text" name="country" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Section: Legal Documentation -->
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2 pt-4">
+                        <i class="fa-solid fa-id-card text-blue-500 mr-2"></i>Legal Documents
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Driving License Number</label>
+                            <input type="text" name="drivingLicenseNumber" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500 uppercase">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Passport Number (Optional)</label>
+                            <input type="text" name="passportNumber" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500 uppercase">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">License Restrictions (If any)</label>
+                            <input type="text" name="LicenseRetrictions" placeholder="e.g., Automatic only, Glasses required (Leave empty if none)" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Form Submission Button -->
+                    <div class="pt-6">
+                        <button type="submit" id="submit-btn" class="w-full text-white bg-blue-600 hover:bg-blue-700 font-bold rounded-lg text-lg px-5 py-4 transition shadow-md">
+                            Create Account
+                        </button>
+                    </div>
+
+                </form>
+                
+                <!-- Link back to login page -->
+                <p class="text-center text-sm text-gray-600 mt-6">
+                    Already have an account? <a href="/login" class="font-bold text-blue-600 hover:underline">Sign in here</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Intercepts the form submit event to asynchronously post payload data
+         * to the Flask backend without requiring a full page refresh.
+         */
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const msgBanner = document.getElementById('msg-banner');
+            
+            // Activate loading visual feedback state on the submit button
+            const originalBtnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Creating account...';
+            btn.disabled = true;
+            
+            // Reset and hide message status banner
+            msgBanner.classList.add('hidden');
+            msgBanner.className = "mb-6 p-4 rounded-lg font-medium text-center hidden"; 
+
+            // Serialize all form input parameters into a structured JavaScript object
+            const formData = new FormData(this);
+            const payload = Object.fromEntries(formData.entries());
+            
+            // Provide a default value for optional license restrictions if left blank
+            if (!payload.LicenseRetrictions.trim()) {
+                payload.LicenseRetrictions = "None";
+            }
+
+            // Transmit the registration payload to the Flask backend via POST
+            fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Display success banner and style accordingly
+                    msgBanner.textContent = data.message;
+                    msgBanner.classList.add('bg-green-100', 'text-green-800');
+                    msgBanner.classList.remove('hidden');
+                    
+                    // Smoothly redirect the user to the login page after a short delay
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1500);
+                } else {
+                    // Display backend validation error (e.g., email already taken)
+                    msgBanner.textContent = data.error;
+                    msgBanner.classList.add('bg-red-100', 'text-red-800');
+                    msgBanner.classList.remove('hidden');
+                    
+                    // Restore button to its normal state
+                    btn.innerHTML = originalBtnText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                // Handle unexpected network or server communication failures
+                msgBanner.textContent = "Server error. Please try again later.";
+                msgBanner.classList.add('bg-red-100', 'text-red-800');
+                msgBanner.classList.remove('hidden');
+                
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Booking - AutoRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans antialiased text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Dynamic Navigation using Jinja2 -->
+    <nav class="bg-white shadow-md relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-20 items-center">
+            <a href="/" class="flex items-center hover:opacity-80">
+                <i class="fa-solid fa-car-side text-blue-600 text-3xl mr-2"></i>
+                <span class="text-2xl font-bold text-gray-900">Auto<span class="text-blue-600">Rent</span></span>
+            </a>
+            <div class="flex items-center space-x-4 bg-gray-50 px-4 py-2 rounded-lg border">
+                <i class="fa-solid fa-user-check text-green-500"></i>
+                <!-- Fetching active customer name from Flask session -->
+                <span class="text-gray-700 font-semibold">{{ session.get('customer_name') }}</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-3xl mx-auto px-4 py-12 w-full">
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div class="bg-blue-600 p-6 text-white text-center">
+                <i class="fa-solid fa-clipboard-check text-3xl mb-2"></i>
+                <h1 class="text-2xl font-bold">Review & Confirm Your Booking</h1>
+                <p class="text-blue-100 mt-1">Please review your details and process payment to secure your vehicle.</p>
+            </div>
+            
+            <div class="p-8">
+                <!-- Vehicle & Dates Summary (Data populated via Flask URL Params) -->
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Booking Details</h2>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex justify-between">
+                            <span class="font-medium">Vehicle Registration (VRM):</span> 
+                            <strong class="uppercase text-blue-700">{{ vrm or 'Not selected' }}</strong>
+                        </li>
+                        <li class="flex justify-between">
+                            <span class="font-medium">Pick-up Date:</span> 
+                            <strong class="text-gray-900">{{ date_from or 'Not selected' }}</strong>
+                        </li>
+                        <li class="flex justify-between">
+                            <span class="font-medium">Drop-off Date:</span> 
+                            <strong class="text-gray-900">{{ date_to or 'Not selected' }}</strong>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mock Payment Section -->
+                <div class="mb-8 p-6 border rounded-lg bg-white shadow-inner">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4">Secure Payment (Simulation)</h2>
+                    <div class="relative mb-4">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-credit-card text-gray-400"></i>
+                        </div>
+                        <input type="text" placeholder="Card Number (Mock)" value="**** **** **** 1234" disabled class="pl-10 w-full bg-gray-100 border border-gray-300 text-gray-500 rounded-lg block p-3 outline-none">
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <!-- Passing the VRM from Jinja2 directly into the JS function -->
+                <button id="pay-btn" onclick="processPaymentAndRent('{{ vrm }}')" class="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-bold rounded-lg text-lg px-5 py-4 shadow-md transition flex justify-center items-center">
+                    <i class="fa-solid fa-lock mr-2"></i> Pay £75.00 & Confirm Booking
+                </button>
+                
+                <!-- Success Message (Hidden by default, displayed via JS) -->
+                <div id="success-msg" class="hidden mt-6 bg-green-50 border-2 border-green-200 text-green-900 rounded-xl p-8 text-center shadow-inner">
+                    <i class="fa-solid fa-circle-check text-6xl text-green-500 mb-5"></i>
+                    <h3 class="text-2xl font-black">Booking Confirmed!</h3>
+                    <p class="mt-3 text-gray-700">Payment was successful. The vehicle status has been updated to <strong>RENTED</strong> in the database.</p>
+                    <a href="/home" class="mt-6 inline-block text-white bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition shadow">
+                        <i class="fa-solid fa-house mr-2"></i> Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+   <script>
+        /**
+         * Main function to process the booking and payment.
+         * Triggered when the user clicks the confirmation button.
+         * Validates date parameters and transmits the rental request to the backend.
+         * @param {string} vrm - Vehicle Registration Mark
+         */
+        function processPaymentAndRent(vrm) {
+            // Extract pick-up and drop-off dates from the current URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const dateFrom = urlParams.get('from');
+            const dateTo = urlParams.get('to');
+
+            // Validation: Ensure pick-up and drop-off dates are provided before proceeding
+            if (!dateFrom || !dateTo || dateFrom.trim() === '' || dateTo.trim() === '') {
+                alert("Error: Pick-up and Drop-off dates are required to complete a booking. Please select your dates.");
+                window.location.href = "/booking"; // Redirect back to vehicle search and selection page
+                return;
+            }
+
+            // Validate VRM presence and ensure a valid car was selected
+            if (!vrm || vrm === 'None' || vrm === 'Not selected') {
+                alert("Error: No valid vehicle VRM provided.");
+                return;
+            }
+
+            const btn = document.getElementById('pay-btn');
+            
+            // 1. Simulate the payment processing (UI update state)
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Communicating with bank...';
+            btn.disabled = true;
+            btn.classList.replace('bg-green-600', 'bg-gray-400');
+            btn.classList.replace('hover:bg-green-700', 'hover:bg-gray-400');
+
+            // 2. Make the actual API request to the Flask backend to rent the vehicle
+            // This route inserts a new row in the 'status' table with status='RENTED' linked to the user session
+            setTimeout(() => { // Artificial delay to simulate banking network processing time
+                fetch('/vehicles/' + vrm + '/rent')
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => { 
+                                throw new Error(errData.error || "Rental API Error"); 
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 3. Success state: Hide the payment button and display the confirmation banner
+                        btn.classList.add('hidden');
+                        document.getElementById('success-msg').classList.remove('hidden');
+                    })
+                    .catch(err => {
+                        // 4. Error state (e.g., vehicle is no longer available or server error)
+                        console.error("Rental Error:", err);
+                        alert("An error occurred during booking:\n" + err.message + "\n\nPlease try again or select another car.");
+                        
+                        // Reset button to its original state allowing the user to retry
+                        btn.innerHTML = '<i class="fa-solid fa-lock mr-2"></i> Pay £75.00 & Confirm Booking';
+                        btn.disabled = false;
+                        btn.classList.replace('bg-gray-400', 'bg-green-600');
+                        btn.classList.replace('hover:bg-gray-400', 'hover:bg-green-700');
+                    });
+            }, 1800); // 1.8 seconds delay
+        }
+    </script>
+</body>
+</html>

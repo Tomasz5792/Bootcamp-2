@@ -1,0 +1,5 @@
+$kind: http-request
+description: 'Retrieves the complete list of all vehicles in the Car-Go Rentals fleet, regardless of their current status. Use this request to get a full inventory overview, including available, rented, and any other categorised vehicles.'
+url: http://127.0.0.1:5000//vehicle
+method: GET
+order: 461727286038

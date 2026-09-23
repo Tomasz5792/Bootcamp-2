@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AutoRent</title>
+    <!-- Tailwind CSS for rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for scalable vector icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Brand Logo & Homepage Link -->
+                <a href="/home" class="flex-shrink-0 flex items-center hover:opacity-80 transition">
+                    <i class="fa-solid fa-car-side text-blue-600 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-gray-900 tracking-tight">Auto<span class="text-blue-600">Rent</span></span>
+                </a>
+                
+                <!-- Desktop Navigation Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="/home" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Dashboard</a>
+                    <a href="/booking" class="text-gray-500 hover:text-blue-600 font-medium transition">Book a Car</a>
+                </div>
+
+                <!-- User Profile & Logout Controls -->
+                <div class="flex items-center space-x-4">
+                    {% if session.get('logged_in') %}
+                        <div class="flex items-center bg-gray-100 px-4 py-2 rounded-lg">
+                            <i class="fa-solid fa-user-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700 font-bold mr-4">Hi, {{ session.get('customer_name') }}!</span>
+                            <a href="/logout" class="text-red-500 hover:text-red-700 text-sm font-semibold transition border-l border-gray-300 pl-4">Log Out</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- Welcome Header Section -->
+        <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900">Welcome back, {{ session.get('customer_name') }}!</h1>
+                <p class="mt-1 text-sm text-gray-500">Here is an overview of your account and current active bookings.</p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <a href="/booking" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                    <i class="fa-solid fa-plus mr-2"></i> New Booking
+                </a>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Dynamic Active Bookings -->
+            <div class="lg:col-span-2 space-y-6">
+                <h2 class="text-xl font-bold text-gray-900">Active Bookings</h2>
+                
+                <!-- Container where active bookings will be rendered dynamically via JavaScript -->
+                <div id="bookings-container" class="space-y-4">
+                    <div class="bg-white rounded-xl p-8 text-center shadow-sm border border-gray-100">
+                        <i class="fa-solid fa-spinner fa-spin text-2xl text-blue-600 mb-2"></i>
+                        <p class="text-gray-500 text-sm">Loading your active bookings...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar Widgets -->
+            <div class="space-y-6">
+                <!-- Account Summary Widget -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4">Account Summary</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-center justify-between border-b border-gray-50 pb-2">
+                            <span class="text-sm text-gray-500"><i class="fa-regular fa-user mr-2"></i> Role</span>
+                            <span class="text-sm font-medium text-gray-900 uppercase">{{ session.get('role', 'Customer') }}</span>
+                        </li>
+                        <li class="flex items-center justify-between border-b border-gray-50 pb-2">
+                            <span class="text-sm text-gray-500"><i class="fa-solid fa-id-badge mr-2"></i> User ID</span>
+                            <span class="text-sm font-medium text-gray-900">#{{ session.get('customer_id') }}</span>
+                        </li>
+                        <li class="flex items-center justify-between pt-2">
+                            <span class="text-sm text-gray-500"><i class="fa-solid fa-medal mr-2 text-yellow-500"></i> Loyalty Points</span>
+                            <span class="text-sm font-bold text-blue-600">1,250 pts</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Quick Support Widget -->
+                <div class="bg-blue-50 rounded-xl border border-blue-100 p-6">
+                    <div class="flex items-center mb-3">
+                        <i class="fa-solid fa-headset text-blue-600 text-xl mr-3"></i>
+                        <h2 class="text-lg font-bold text-gray-900">Need Help?</h2>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">Our support team is available 24/7 to assist you with your bookings or account.</p>
+                    <a href="#" class="inline-block bg-white text-blue-600 font-medium px-4 py-2 rounded shadow-sm border border-gray-200 hover:bg-gray-50 transition text-sm">
+                        Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        /**
+         * Fetch active bookings from the backend API and render them dynamically.
+         */
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('/api/customer/bookings')
+                .then(response => response.json())
+                .then(bookings => {
+                    const container = document.getElementById('bookings-container');
+                    container.innerHTML = ''; // Clear loading state
+
+                    // Handle scenario where no active bookings are found
+                    if (!bookings || bookings.length === 0) {
+                        container.innerHTML = `
+                            <div class="bg-white rounded-xl p-8 text-center shadow-sm border border-gray-100">
+                                <i class="fa-solid fa-car-side text-4xl text-gray-300 mb-3"></i>
+                                <h3 class="text-lg font-bold text-gray-900">No active bookings found</h3>
+                                <p class="text-gray-500 text-sm mt-1">You haven't rented any vehicles yet. Explore our fleet to make your first booking!</p>
+                                <a href="/booking" class="mt-4 inline-block bg-blue-600 text-white font-medium px-5 py-2.5 rounded-lg text-sm hover:bg-blue-700 transition">
+                                    Browse Vehicles
+                                </a>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // Render each active rental as a structured card component
+                    bookings.forEach(car => {
+                        const dayRate = car.dayRate ? parseFloat(car.dayRate).toFixed(2) : "0.00";
+                        
+                        const cardHtml = `
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row transition-shadow hover:shadow-md">
+                                <div class="md:w-2/5 bg-gray-200 relative flex items-center justify-center p-4">
+                                    <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2070&auto=format&fit=crop" alt="${car.make} ${car.model}" class="h-48 md:h-full w-full object-cover">
+                                    <div class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wide shadow">
+                                        Active / Rented
+                                    </div>
+                                </div>
+                                
+                                <div class="p-6 md:w-3/5 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h3 class="text-lg font-bold text-gray-900">${car.make} ${car.model}</h3>
+                                                <p class="text-sm text-gray-500 uppercase tracking-wider">${car.category} • ${car.colour} (${car.year})</p>
+                                            </div>
+                                            <span class="font-bold text-blue-600 text-lg">£${dayRate}<span class="text-xs text-gray-500 font-normal">/day</span></span>
+                                        </div>
+                                        
+                                        <div class="mt-4 grid grid-cols-1 gap-2 text-sm text-gray-600">
+                                            <p><i class="fa-solid fa-id-card text-gray-400 mr-2"></i> Registration (VRM): <strong class="text-gray-900 uppercase">${car.vrm}</strong></p>
+                                            <p><i class="fa-solid fa-location-dot text-gray-400 mr-2"></i> Pick-up Location: <strong class="text-gray-900">${car.status_location || 'Branch'}</strong></p>
+                                            <p><i class="fa-solid fa-clock text-gray-400 mr-2"></i> Rented Since: <strong class="text-gray-900">${car.status_date_time}</strong></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex space-x-3">
+                                        <a href="/booking/confirm?vrm=${car.vrm}" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                })
+                .catch(err => {
+                    console.error("Error loading customer bookings:", err);
+                    document.getElementById('bookings-container').innerHTML = `
+                        <div class="bg-red-50 text-red-700 p-4 rounded-xl text-center text-sm font-medium">
+                            Failed to load active bookings from the server.
+                        </div>
+                    `;
+                });
+        });
+    </script>
+</body>
+</html>

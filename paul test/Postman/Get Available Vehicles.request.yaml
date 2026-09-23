@@ -1,0 +1,6 @@
+$kind: http-request
+description: 'Retrieves all vehicles that are currently available for rental. This request filters the fleet to return only vehicles with an AVAILABLE status, making it useful for checking what can be booked at any given time.'
+url: http://127.0.0.1:5000/vehicle/available
+method: GET
+order: 1789548400421
+
