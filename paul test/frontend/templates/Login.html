@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In - AutoRent</title>
+    <!-- Tailwind CSS for rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for vector icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800 h-screen flex flex-col justify-center items-center">
+
+    <!-- Brand Logo Header -->
+    <div class="mb-8 text-center">
+        <a href="/" class="flex items-center justify-center hover:opacity-80 transition">
+            <i class="fa-solid fa-car-side text-blue-600 text-4xl mr-2"></i>
+            <span class="text-3xl font-bold text-gray-900 tracking-tight">Auto<span class="text-blue-600">Rent</span></span>
+        </a>
+    </div>
+
+    <!-- Login Card Container -->
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Welcome back</h2>
+        
+        <!-- Error Banner (Hidden by default) -->
+        <div id="error-msg" class="hidden mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm text-center"></div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="space-y-5">
+            <!-- Email Input Field -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-regular fa-envelope text-gray-400"></i>
+                    </div>
+                    <input type="text" id="email" required class="pl-10 w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none">
+                </div>
+            </div>
+
+            <!-- Password Input Field -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-lock text-gray-400"></i>
+                    </div>
+                    <input type="password" id="password" class="pl-10 w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submit-btn" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 shadow-md transition">
+                Log In
+            </button>
+        </form>
+
+        <!-- Redirect to Sign-up Link -->
+        <p class="mt-6 text-sm text-center text-gray-600">
+            Don't have an account? <a href="/signup" class="text-blue-600 font-semibold hover:underline">Sign up</a>
+        </p>
+    </div>
+
+    <script>
+        // Handle asynchronous login submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const errorDiv = document.getElementById('error-msg');
+            
+            // Show loading spinner on button and hide prior errors
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Checking...';
+            errorDiv.classList.add('hidden');
+
+            // Construct payload from input values
+            const payload = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            // Send POST request to backend API login route
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Check if there's a stored 'next' URL parameter (e.g. returning from booking flow)
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const nextUrl = urlParams.get('next');
+
+                    if (nextUrl) {
+                        window.location.href = nextUrl;
+                    } else {
+                        // Use backend-provided redirect (e.g. /staffhome for admin, / for customer)
+                        window.location.href = data.redirect_url;
+                    }
+                } else {
+                    // Display error message from server
+                    errorDiv.textContent = data.error;
+                    errorDiv.classList.remove('hidden');
+                    btn.innerHTML = 'Log In';
+                }
+            })
+            .catch(err => {
+                // Handle network or system failures
+                errorDiv.textContent = 'Server error. Try again.';
+                errorDiv.classList.remove('hidden');
+                btn.innerHTML = 'Log In';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Cars - AutoRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Brand Logo & Link to Homepage -->
+                <a href="/" class="flex-shrink-0 flex items-center hover:opacity-80 transition">
+                    <i class="fa-solid fa-car-side text-blue-600 text-3xl mr-2"></i>
+                    <span class="text-2xl font-bold text-gray-900">Auto<span class="text-blue-600">Rent</span></span>
+                </a>
+                <!-- Authentication Action Link -->
+                <div class="flex items-center space-x-4">
+                    <a href="/login" class="text-gray-600 hover:text-blue-600 font-medium transition duration-150">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        
+        <!-- Page Header & Active Search Criteria Summary -->
+        <div class="mb-8 flex justify-between items-end border-b border-gray-200 pb-5">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900">Available Vehicles</h1>
+                <p id="search-summary" class="mt-2 text-gray-500">Searching based on your criteria...</p>
+            </div>
+            <!-- Back link to modify the search parameters -->
+            <a href="/" class="text-blue-600 hover:text-blue-800 font-medium"><i class="fa-solid fa-arrow-left mr-1"></i> Modify Search</a>
+        </div>
+
+        <!-- Dynamic Grid Container for Vehicle Cards -->
+        <div id="cars-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Loading Spinner (Visible while waiting for API response) -->
+            <div id="loading-spinner" class="col-span-full flex justify-center py-12">
+                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-600"></i>
+            </div>
+        </div>
+        
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Extract search parameters from the URL (e.g., ?loc=Bristol)
+            const urlParams = window.location.search;
+            const paramsObject = new URLSearchParams(urlParams);
+            
+            // 2. Update the descriptive text with the searched location
+            const locationText = paramsObject.get('loc') || 'All locations';
+            document.getElementById('search-summary').textContent = `Showing results for: ${locationText}`;
+
+            // 3. Fetch vehicle data from the Python API backend
+            fetch('/vehicle/available/search' + urlParams)
+                .then(response => response.json())
+                .then(cars => {
+                    const container = document.getElementById('cars-container');
+                    const spinner = document.getElementById('loading-spinner');
+                    
+                    // Remove the loading spinner once data is successfully received
+                    if (spinner) spinner.remove();
+
+                    // Handle empty results by displaying a user-friendly warning message
+                    if (!cars || cars.length === 0) {
+                        container.innerHTML = `
+                            <div class="col-span-full bg-yellow-50 border border-yellow-200 rounded-xl p-8 text-center">
+                                <i class="fa-solid fa-car-burst text-4xl text-yellow-500 mb-3"></i>
+                                <h3 class="text-xl font-bold text-gray-900">No vehicles found</h3>
+                                <p class="text-gray-600 mt-2">Try changing your dates, location, or car category.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // 4. Generate and append HTML cards for each vehicle returned by the database
+                    cars.forEach(car => {
+                        
+                        // Extract category and convert to uppercase for robust comparison
+                        const cat = (car.category || "").toUpperCase().trim();
+                        let imageUrl = "";
+
+                        // --- LOCAL IMAGE ROUTING LOGIC (CATEGORY-BASED) ---
+                        // Assigns specific local static assets based on the vehicle's category
+                        if (cat.includes("SUV")) {
+                            imageUrl = "/static/suv.jpeg"; 
+                        } 
+                        else if (cat.includes("VAN")) {
+                            imageUrl = "/static/VAN.jpeg";
+                        } 
+                        else if (cat.includes("COUPE")) {
+                            imageUrl = "/static/COUPE.jpeg";
+                        }
+                        else if (cat.includes("BUDGET")) {
+                            imageUrl = "/static/BUDGET.jpeg";
+                        }
+                        else if (cat.includes("COMPACT")) {
+                            imageUrl = "/static/COMPACT.jpeg";
+                        }
+                        else if (cat.includes("FAMILY")) {
+                            imageUrl = "/static/FAMILY.jpeg";
+                        }
+                        else if (cat.includes("SPORT")) {
+                            imageUrl = "/static/sport.jpeg";
+                        }
+                        else if (cat.includes("TRUCK")) {
+                            imageUrl = "/static/Truck.jpeg";
+                        }
+                        else {
+                            // Default fallback external image if the category doesn't match predefined rules
+                            imageUrl = "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=800&q=80";
+                        }
+
+                        // Ensure daily rate is safely formatted as a float with exactly 2 decimal places
+                        const dayRate = car.dayRate ? parseFloat(car.dayRate).toFixed(2) : "0.00";
+
+                        // Construct the HTML template structure for the individual vehicle card
+                        const cardHtml = `
+                            <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition flex flex-col group">
+                                <div class="h-48 overflow-hidden bg-gray-200 relative">
+                                    <img src="${imageUrl}" alt="${car.category} Car" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                </div>
+                                <div class="p-6 flex-grow flex flex-col">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h2 class="text-xl font-bold text-gray-900">${car.make} ${car.model}</h2>
+                                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded border border-blue-200">${car.category}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mb-4 uppercase tracking-wide">
+                                        <i class="fa-solid fa-location-dot mr-1"></i> ${car.status_location || car.branch || 'Branch'}
+                                    </p>
+                                    
+                                    <div class="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
+                                        <div class="flex items-center"><i class="fa-solid fa-users w-5 text-gray-400"></i> ${car.numberSeats} Seats</div>
+                                        <div class="flex items-center"><i class="fa-solid fa-gas-pump w-5 text-gray-400"></i> ${car.fuelEconomy || '-'} mpg</div>
+                                        <div class="flex items-center"><i class="fa-solid fa-palette w-5 text-gray-400"></i> ${car.colour || '-'}</div>
+                                        <div class="flex items-center"><i class="fa-solid fa-calendar w-5 text-gray-400"></i> ${car.year}</div>
+                                    </div>
+                                    
+                                    <div class="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
+                                        <div>
+                                            <span class="text-2xl font-black text-gray-900">£${dayRate}</span>
+                                            <span class="text-gray-500 text-sm">/day</span>
+                                        </div>
+                                        <button onclick="bookVehicle('${car.vrm}')" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition shadow-sm">
+                                            Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Insert the generated HTML card into the DOM container
+                        container.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                })
+                .catch(error => {
+                    // Handle fetch errors (e.g., backend server down or network failure)
+                    console.error("Error fetching vehicles:", error);
+                    document.getElementById('cars-container').innerHTML = `<p class="col-span-full text-red-500 font-bold text-center">Error connecting to the server.</p>`;
+                });
+        });
+
+        /**
+         * Redirects the user to the booking confirmation page.
+         * Triggered when the user clicks the 'Book Now' button on a specific vehicle card.
+         * @param {string} vrm - The Vehicle Registration Mark.
+         */
+        function bookVehicle(vrm) {
+            // Extract filtering dates directly from the current page URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const dateFrom = urlParams.get('from') || '';
+            const dateTo = urlParams.get('to') || '';
+            
+            // Redirect the user, passing the VRM and selected dates for the next step
+            window.location.href = `/booking/confirm?vrm=${vrm}&from=${dateFrom}&to=${dateTo}`;
+        }
+    </script>
+</body>
+</html>

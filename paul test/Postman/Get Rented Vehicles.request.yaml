@@ -1,0 +1,5 @@
+$kind: http-request
+description: 'Retrieves all vehicles that are currently out on rental. Use this request to monitor active rentals across the fleet and identify which vehicles are unavailable for new bookings.'
+url: http://127.0.0.1:5000/vehicle/rented
+method: GET
+order: 3276060355361228
