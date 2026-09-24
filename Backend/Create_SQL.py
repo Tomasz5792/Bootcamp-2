@@ -157,6 +157,7 @@ def check_database(conn):
     print("\nsecurity:")
     print(pd.read_sql('SELECT * FROM security LIMIT 10', conn))
 
+    print(pd.read_sql('SELECT * FROM vehicles LIMIT 1', conn).columns.tolist())
 
 if __name__ == "__main__":
     conn = create_database()
