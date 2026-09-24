@@ -26,11 +26,13 @@
 # - add documentation for the API - Postman collection --------------------------------------------------------- 
 
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, session, redirect, url_for
 import pandas as pd
 import json
 from Create_SQL import create_database, check_database
 import datetime
+from urllib.parse import quote
+
 
 # Initialize Flask App with specific template and static folders
 app = Flask(__name__, template_folder="../Frontend/templates", static_folder="../Frontend/static")
@@ -40,11 +42,6 @@ app.secret_key = "cheie_super_secreta_pentru_sesiuni" # Required for session man
 conn = create_database()
 # check_database(conn)  # Uncomment to show the sql tables for debugging purposes
 
-#################
-#################
-##### Pages #####
-#################
-#################
 
 #################
 #################
@@ -59,18 +56,13 @@ conn = create_database()
 def home_page():
     return render_template("Home.html")
 
-#homepage
-#http://127.0.0.1:5000/login
-@app.route("/login")
-def login_page():
-    return render_template("Login.html")
 
 # Login Page
 # http://127.0.0.1:5000/login
 @app.route("/login")
 def login_page():
     """Renders the login interface for customers and staff."""
-    return render_template("login.html")
+    return render_template("Login.html")
 
 # Sign-Up Page
 # http://127.0.0.1:5000/signup
@@ -706,7 +698,7 @@ def get_vehicle_types():
 
 
 @app.route("/vehicles/<vrm>/rent")
-def rent_vehicle(vrm):
+def rent_vehicle_Paul(vrm):
     """Processes a rental transaction by updating the vehicle's status to RENTED."""
     vehicle_id = get_vehicle_id(vrm)
     if vehicle_id is None:
@@ -740,7 +732,7 @@ def rent_vehicle(vrm):
     return jsonify({"message": "Vehicle rented successfully"})
 
 @app.route("/vehicles/<vrm>/return")
-def return_vehicle(vrm):
+def return_vehicle_Paul(vrm):
     """Processes a return transaction by updating the vehicle's status back to AVAILABLE."""
     vehicle_id = get_vehicle_id(vrm)
     if vehicle_id is None:
@@ -775,7 +767,7 @@ def return_vehicle(vrm):
 
 @app.route('/reports/branch')
 @app.route('/api/reports/branch-inventory')
-def get_branch_report():
+def get_branch_report_Paul():
     """GETs an aggregated count of all vehicles distributed by physical branch."""
     query = """
     SELECT s.status_location as branch, COUNT(*) as car_count
@@ -790,7 +782,7 @@ def get_branch_report():
     return df.to_json(orient="records")
 
 @app.route('/reports/status')
-def get_status_report():
+def get_status_report_Paul():
     """GETs an aggregated count of all vehicles categorized by their current operational status."""
     query = """
     SELECT status, COUNT(*) AS total
@@ -811,7 +803,7 @@ def get_status_report():
 ####################
 
 @app.route("/api/vehicles/add", methods=["POST"])
-def add_vehicle():
+def add_vehicle_Paul():
     """Adds a new vehicle to the fleet and sets its initial status to AVAILABLE."""
     data = request.get_json()
     cursor = conn.cursor()
@@ -845,7 +837,7 @@ def add_vehicle():
         return jsonify({"error": str(e)}), 400
 
 @app.route("/api/vehicles/<vrm>/status", methods=["POST"])
-def update_vehicle_status(vrm):
+def update_vehicle_status_Paul(vrm):
     """Manually forces a status update (e.g., sending a car to Maintenance)."""
     data = request.get_json()
     vehicle_id = get_vehicle_id(vrm)
@@ -870,7 +862,7 @@ def update_vehicle_status(vrm):
         return jsonify({"error": str(e)}), 400
 
 @app.route("/vehicles/<vrm>", methods=["DELETE"])
-def delete_vehicle(vrm):
+def delete_vehicle_Paul(vrm):
     """Permanently deletes a vehicle and its entire operational history."""
     vehicle_id = get_vehicle_id(vrm)
     if vehicle_id is None:
@@ -890,7 +882,7 @@ def delete_vehicle(vrm):
 # ==========================================
 
 @app.route("/api/customer/bookings")
-def get_customer_bookings():
+def get_customer_bookings_Paul():
     """
     Retrieves all active rentals/bookings for the customer 
     currently logged into the active Flask session.
@@ -921,7 +913,7 @@ def get_customer_bookings():
 ####################
 
 @app.route("/api/login", methods=["POST"])
-def api_login():
+def api_login_Paul():
     """Authenticates a user, routing Staff to the backend and Customers to the storefront."""
     try:
         data = request.get_json()
@@ -974,7 +966,7 @@ def api_login():
 
 
 @app.route("/api/signup", methods=["POST"])
-def api_signup():
+def api_signup_Paul():
     """Registers a new customer, generating a sequential ID, and inserts them into the database."""
     try:
         data = request.get_json()
@@ -1022,7 +1014,7 @@ def api_signup():
 
 @app.route("/logout")
 @app.route("/api/logout", methods=["POST"])
-def logout():
+def logout_Paul():
     """Clears the current user session and redirects to the public homepage."""
     session.clear() 
     

@@ -18,22 +18,19 @@ def create_database():
         sqlite3.Connection: Connection object to the in-memory SQLite database
     """
     
-    # Initialize connection allowing multi-threading (crucial for Flask)
     conn = sqlite3.connect(':memory:', check_same_thread=False)
 
-    # 1. Load initial data from CSV files into Pandas DataFrames
+
     vehicles = pd.read_csv('Data/vehicle.csv')
     customers = pd.read_csv('Data/customer.csv')
 
-    # 2. Convert Pandas DataFrames directly into SQL tables
+
     vehicles.to_sql('vehicles', conn, if_exists='replace', index=False)
     customers.to_sql('customers', conn, if_exists='replace', index=False)
 
     cursor = conn.cursor()
     
-    # 3. Create the 'status' table to track rental history and locations
-    # Note: Removed the FOREIGN KEY constraints to avoid schema conflicts 
-    # since 'vehicles' and 'customers' were created dynamically by pandas.
+
     cursor.execute('''
         CREATE TABLE status (
             rental_id INTEGER PRIMARY KEY,

@@ -1,5 +1,5 @@
 vehicle_id,make,model,colour,vin,year,vrm,category,numberSeats,dayRate,status,fuelEconomy,branch
-1,Honda,Civic,Mauv,5GAKRAED8BJ988062,2006,JA82VXV,Compact,4,40,AVAILABLE,16.6,test 2
+1,Honda,Civic,Mauv,5GAKRAED8BJ988062,2006,JA82VXV,Compact,4,40,AVAILABLE,16.6,Bristol
 2,Lincoln,Navigator,Fuscia,WAUGGBFC6CN829005,2002,ID79CGU,Budget,5,20,AVAILABLE,24.8,Manchester
 3,Nissan,Rogue,Blue,JN1CV6AP9CM644206,2009,PH12SKL,Budget,5,20,SERVICEREQ,13,Luton
 4,Saturn,S-Series,Maroon,1D7CW2GK7AS672499,2000,TD97LNQ,Budget,5,20,SERVICEREQ,20.3,Manchester
