@@ -1,29 +1,29 @@
 # For individual vehicles:
 # - show details of specific vehicle (according to car reg) ---------------------------------------------------- done
-# - rent a specific vehicle ------------------------------------------------------------------------------------
-# - return a specific vehicle ----------------------------------------------------------------------------------
-# - add a new vehicle to the rental fleet ----------------------------------------------------------------------
-# - remove a specific vehicle from the rental fleet ------------------------------------------------------------
+# - rent a specific vehicle ------------------------------------------------------------------------------------ 
+# - return a specific vehicle ---------------------------------------------------------------------------------- 
+# - add a new vehicle to the rental fleet ---------------------------------------------------------------------- 
+# - remove a specific vehicle from the rental fleet ------------------------------------------------------------ 
 
 # For multiple vehicles:
 # - show all vehicles ------------------------------------------------------------------------------------------ done
-# - show vehicles available for rent (preferably organised per branch) -----------------------------------------
-# - show vehicles currently rented out (preferably organised per branch) ---------------------------------------
+# - show vehicles available for rent (preferably organised per branch) ----------------------------------------- 
+# - show vehicles currently rented out (preferably organised per branch) --------------------------------------- 
 
 # Extensions:
 # - Homepage --------------------------------------------------------------------------------------------------- done
-# - show reports for number of vehicles per branch -------------------------------------------------------------
-# - show reports for number of vehicles per status (available, rented, returned, damaged, service required) ----
-# - show reports for number of vehicles per status per branch --------------------------------------------------
-# - As above but for a specific time period (e.g. last week, last month, last year) ----------------------------
-# - Create sign up for a new customer and add them to the customers table --------------------------------------
+# - show reports for number of vehicles per branch ------------------------------------------------------------- 
+# - show reports for number of vehicles per status (available, rented, returned, damaged, service required) ---- 
+# - show reports for number of vehicles per status per branch -------------------------------------------------- 
+# - As above but for a specific time period (e.g. last week, last month, last year) ---------------------------- 
+# - Create sign up for a new customer and add them to the customers table -------------------------------------- 
 
 # Security:
-# - add authentication to the API ------------------------------------------------------------------------------
-# - add authorization to the API (e.g. only allow certain users to add/remove vehicles) ------------------------
+# - add authentication to the API ------------------------------------------------------------------------------ 
+# - add authorization to the API (e.g. only allow certain users to add/remove vehicles) ------------------------ 
 
 # Documentation:
-# - add documentation for the API - Postman collection ---------------------------------------------------------
+# - add documentation for the API - Postman collection --------------------------------------------------------- 
 
 
 from flask import Flask, jsonify, render_template, request

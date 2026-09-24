@@ -9,9 +9,8 @@ from werkzeug.security import generate_password_hash
 # url for website
 #url = "http://localhost:5000/hello" # I dont think this is needed anymore
 
-# JSON file path
+# JSON file path  # Used for testing
 filepath = os.path.join(os.path.dirname(__file__), 'apikey.json')
-#filepath = os.path.join(os.path.dirname(__file__), '..', 'security/apikey.json') old filepath
 print(f'Filepath: {filepath}')
 
 
