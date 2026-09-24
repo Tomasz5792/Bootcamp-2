@@ -33,6 +33,7 @@ from Create_SQL import create_database, check_database
 import datetime
 from urllib.parse import quote
 from Security import get_api_key, create_api_key, create_api_key_file
+from functools import wraps
 
 
 # Initialize Flask App with specific template and static folders
@@ -43,17 +44,73 @@ app.secret_key = "cheie_super_secreta_pentru_sesiuni" # Required for session man
 conn = create_database()
 # check_database(conn)  # Uncomment to show the sql tables for debugging purposes
 
+
+
 #########################
 #########################
 ##### Autherisation #####
 #########################
 #########################
 
-#creates api key on lohin
-#http://127.0.0.1:5000/
-@app.route("/api/create/apikey")
-def create_apikey():
-    return render_template("Home.html")
+apikeys = {"apikeystaff1234":"staff",
+           "apikeycustomer1234":"customer"}
+
+# creates api key on lohin
+# http://127.0.0.1:5000/api/create/apikey/customer
+# http://127.0.0.1:5000/api/create/apikey/staff
+# @app.route("/api/create/apikey", methods=["POST"]) # cant get this to work
+@app.route("/api/create/apikey/<type>")
+def create_apikey(type):
+    apikey = create_api_key(type)
+    create_api_key_file(apikey)
+    return jsonify({"Sucsess":"api key created"})
+
+# gets your api key
+# http://127.0.0.1:5000/api/get/apikey
+@app.route("/api/get/apikey")
+def get_apikey():
+    apikey = get_api_key()
+    return jsonify({"apikey":apikey})
+
+# ?api_key=2eb95082-82ca-42e6-8eb9-d79ffc872a5c
+def require_customer_apikey(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        #code to check key
+        key = request.headers.get('X-API-KEY') or request.args.get('api_key') #remove request args in real as it leaks the api key
+        apikey = get_api_key()
+        if key is None:
+            return jsonify({"error": "Missing API key"}), 401
+        if key != apikey:
+            return jsonify({"error": "Invalid API key"}), 401
+        return f(*args, **kwargs)
+    return decorated
+
+# ?api_key=2eb95082-82ca-42e6-8eb9-d79ffc872a5c
+def require_staff_apikey(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        #code to check key
+        key = request.headers.get('X-API-KEY') or request.args.get('api_key') #remove request args in real as it leaks the api key
+        apikey = get_api_key()
+        if key is None:
+            return jsonify({"error": "Missing API key"}), 401
+        if key != apikey:
+            return jsonify({"error": "Invalid API key"}), 401
+        return f(*args, **kwargs)
+    return decorated
+
+# test to check if it is working
+# http://127.0.0.1:5000/vehicle/locations/test?api_key=2eb95082-82ca-42e6-8eb9-d79ffc872a5c
+@app.route("/vehicle/locations/test")
+@require_customer_apikey
+def get_vehicle_locations_fortest():
+    query = """
+    SELECT DISTINCT status_location
+    FROM status
+    """
+    df = pd.read_sql(query, conn)
+    return df.to_json(orient="records")
 
 
 

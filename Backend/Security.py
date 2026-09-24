@@ -16,7 +16,7 @@ print(f'Filepath: {filepath}')
 
 
 #generate random api key
-def create_api_key(type: str = "cust"):
+def create_api_key(type: str = "customer"):
     """Generates a cryptographicly random API key using secret.
 
     Args:

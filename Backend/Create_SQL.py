@@ -82,11 +82,11 @@ def create_database():
     ''')
 
     # adding staff and creating passwordhashes and keys
-    print("adding staff:", end=" ")
+    #print("adding staff:", end=" ")
 
     for index in range(1,5):
 
-        print(index,end=" ")
+        #print(index,end=" ")
 
         role = "STAFF"
         customer_id = None
@@ -102,12 +102,12 @@ def create_database():
 
 
     # adding customers and creating passwordhashes and keys
-    print("")
-    print("adding customers:", end=" ")
+    #print("")
+    #print("adding customers:", end=" ")
 
-    for index, row in customers.head(10).iterrows():
+    for index, row in customers.head(4).iterrows():
 
-        print(index,end=" ")
+        #print(index,end=" ")
 
         role = "CUSTOMER"
         customer_id = int(row['customerId'])
