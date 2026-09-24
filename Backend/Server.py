@@ -48,6 +48,7 @@ def get_vehicle_by_vrm(vrm):
     WHERE UPPER(vrm) = UPPER(?)
     """
 
+<<<<<<< Updated upstream
     df = pd.read_sql(
         query,
         conn,
@@ -73,11 +74,48 @@ def get_latest_status(vehicle_id):
 
     query = """
     SELECT *
+=======
+def get_vehicle_id(vrm):
+    """Retrieves the numeric primary key of a vehicle based on its VRM."""
+    vehicle = get_vehicle_by_vrm(vrm)
+    if vehicle.empty:
+        return None
+    return int(vehicle.iloc[0]["vehicle_id"])
+
+def get_latest_status(vehicle_id):
+    """Fetches the most recent status record for a specific vehicle."""
+    query = """
+    SELECT *
     FROM status
     WHERE vehicle_id = ?
     ORDER BY status_date_time DESC
     LIMIT 1
     """
+    df = pd.read_sql(query, conn, params=(vehicle_id,))
+    return df
+
+def get_current_status(vehicle_id):
+    """Extracts the string value of a vehicle's current status (e.g., 'AVAILABLE')."""
+    latest = get_latest_status(vehicle_id)
+    if latest.empty:
+        return None
+    return latest.iloc[0]["status"]
+
+####################
+# Search & Filters #
+####################
+
+@app.route('/api/locations')
+def get_locations():
+    """GETs all unique active branch locations from the database."""
+    query = """
+    SELECT DISTINCT status_location AS name
+>>>>>>> Stashed changes
+    FROM status
+    WHERE status_location IS NOT NULL AND status_location != ''
+    ORDER BY name ASC
+    """
+<<<<<<< Updated upstream
 
     df = pd.read_sql(
         query,
@@ -96,8 +134,26 @@ def get_current_status(vehicle_id):
         return None
 
     return latest.iloc[0]["status"]
+=======
+    df = pd.read_sql(query, conn)
+    return df.to_json(orient="records")
+>>>>>>> Stashed changes
 
+@app.route('/api/car-types')
+def get_car_types():
+    """GETs all unique vehicle categories from the database."""
+    query = """
+    SELECT DISTINCT category AS name
+    FROM vehicles
+    WHERE category IS NOT NULL AND category != ''
+    ORDER BY name ASC
+    """
+    df = pd.read_sql(query, conn)
+    return df.to_json(orient="records")
 
+####################
+# Vehicle Lookups  #
+####################
 
 #homepage
 #http://127.0.0.1:5000/
@@ -248,6 +304,7 @@ def get_rented_vehicles():
 # show reports for number of vehicles per branch
 #http://127.0.0.1:5000/reports/branch
 @app.route('/reports/branch')
+@app.route('/api/reports/branch-inventory')
 def get_branch_report():
     """GETs a report of the number of vehicles per branch and returns as a JSON
 
@@ -259,17 +316,19 @@ def get_branch_report():
         """
     
     query = """
-    SELECT
-        status_location,
-        COUNT(*) AS total
+    SELECT s.status_location AS branch,
+            COUNT(*) AS car_count
     FROM status s
-    WHERE s.status_date_time=
+    INNER JOIN
     (
-        SELECT MAX(s2.status_date_time)
-        FROM status s2
-        WHERE s2.vehicle_id=s.vehicle_id
-    )
-    GROUP BY status_location
+        SELECT vehicle_id,
+           MAX(status_date_time) AS max_date
+        FROM status
+        GROUP BY vehicle_id
+    ) latest
+    ON s.vehicle_id = latest.vehicle_id
+    AND s.status_date_time = latest.max_date
+    GROUP BY s.status_location
     """
 
     df = pd.read_sql(query, conn)
@@ -313,20 +372,31 @@ def rent_vehicle(vrm):
     vehicle_id = get_vehicle_id(vrm)
 
     if vehicle_id is None:
-        return jsonify({
-            "error":"Vehicle not found"
-        }),404
+        return jsonify(
+            {"error": "Vehicle not found"}
+        ), 404
 
     current_status = get_current_status(
         vehicle_id
     )
 
     if current_status != "AVAILABLE":
+        return jsonify(
+            {
+                "error":
+                f"Vehicle cannot be rented because status is {current_status}"
+            }
+        ), 400
 
-        return jsonify({
-            "error":
-            f"Vehicle cannot be rented because status is {current_status}"
-        }),400
+    customer_id = session.get("customer_id")
+
+    if not customer_id:
+        return jsonify(
+            {
+                "error":
+                "User not authenticated in session"
+            }
+        ), 401
 
     latest = get_latest_status(
         vehicle_id
@@ -350,7 +420,7 @@ def rent_vehicle(vrm):
         )
         """,
         (
-            latest.iloc[0]["customer_id"],
+            customer_id,
             vehicle_id,
             latest.iloc[0]["status_location"],
             "RENTED"
@@ -359,7 +429,12 @@ def rent_vehicle(vrm):
 
     conn.commit()
 
-    return jsonify({"message":"Vehicle rented successfully"})
+    return jsonify(
+        {
+            "message":
+            "Vehicle rented successfully"
+        }
+    )
 
 
 #Return a specific vehicle by registration number (vrm)
@@ -533,6 +608,16 @@ def get_vehicle_types():
 @app.route("/vehicles", methods=["POST"])
 def add_vehicle():
 
+<<<<<<< Updated upstream
+=======
+####################
+# Fleet Management #
+####################
+
+@app.route("/api/vehicles/add", methods=["POST"])
+def add_vehicle():
+    """Adds a new vehicle to the fleet and sets its initial status to AVAILABLE."""
+>>>>>>> Stashed changes
     data = request.get_json()
 
     required_fields = [
@@ -548,10 +633,88 @@ def add_vehicle():
         "fuelEconomy"
     ]
 
+<<<<<<< Updated upstream
     for field in required_fields:
 
         if field not in data:
 
+=======
+@app.route("/api/vehicles/<vrm>/status", methods=["POST"])
+def update_vehicle_status(vrm):
+    """Manually forces a status update (e.g., sending a car to Maintenance)."""
+    data = request.get_json()
+    vehicle_id = get_vehicle_id(vrm)
+    
+    if not vehicle_id:
+        return jsonify({"error": "Vehicle not found"}), 404
+        
+    new_status = data.get('status')
+    new_location = data.get('location')
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "INSERT INTO status (customer_id, vehicle_id, status_date_time, status_location, status) "
+            "VALUES (1, ?, CURRENT_TIMESTAMP, ?, ?)",
+            (vehicle_id, new_location, new_status)
+        )
+        conn.commit()
+        return jsonify({"message": f"Status successfully updated to {new_status}"})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 400
+
+# ==========================================
+# CUSTOMER DASHBOARD API ROUTE
+# ==========================================
+
+@app.route("/api/customer/bookings")
+def get_customer_bookings():
+    """
+    Retrieves all active rentals/bookings for the customer 
+    currently logged into the active Flask session.
+    """
+    # Verify if the user is authenticated and has the 'customer' role
+    if not session.get('logged_in') or session.get('role') != 'customer':
+        return jsonify({"error": "Unauthorized"}), 401
+        
+    customer_id = session.get('customer_id')
+    
+    # SQL query to fetch vehicle details and latest status for the logged-in user
+    query = """
+        SELECT v.*, s.status_date_time, s.status_location, s.status
+        FROM vehicles v
+        JOIN status s ON v.vehicle_id = s.vehicle_id
+        WHERE s.customer_id = ? AND s.status = 'RENTED'
+        AND s.status_date_time = (
+            SELECT MAX(s2.status_date_time)
+            FROM status s2
+            WHERE s2.vehicle_id = v.vehicle_id
+        )
+    """
+    df = pd.read_sql(query, conn, params=(customer_id,))
+    return df.to_json(orient="records")
+
+####################
+# AUTHENTICATION   #
+####################
+
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    """Authenticates a user, routing Staff to the backend and Customers to the storefront."""
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password", "") 
+
+        # 1. SPECIAL CASE: Admin / Staff Login
+        if email == "admin" and password == "admin":
+            session['logged_in'] = True
+            session['customer_id'] = 0 
+            session['customer_name'] = 'Administrator'
+            session['role'] = 'admin' 
+            
+>>>>>>> Stashed changes
             return jsonify({
                 "error": f"Missing field: {field}"
             }), 400
@@ -568,7 +731,21 @@ def add_vehicle():
         params=(data["vrm"],)
     )
 
+<<<<<<< Updated upstream
     if not existing_vehicle.empty:
+=======
+@app.route("/api/signup", methods=["POST"])
+def api_signup():
+    """Registers a new customer, generating a sequential ID, and inserts them into the database."""
+    try:
+        data = request.get_json()
+        cursor = conn.cursor()
+        
+        # Check if the email already exists to prevent duplication
+        cursor.execute("SELECT email FROM customers WHERE email = ?", (data['email'],))
+        if cursor.fetchone():
+            return jsonify({"success": False, "error": "This email is already registered."}), 400
+>>>>>>> Stashed changes
 
         return jsonify({
             "error": "Vehicle already exists"
@@ -578,6 +755,7 @@ def add_vehicle():
 
     # Insert vehicle
 
+<<<<<<< Updated upstream
     cursor.execute(
         """
         INSERT INTO vehicles
@@ -611,6 +789,18 @@ def add_vehicle():
             data["fuelEconomy"]
         )
     )
+=======
+@app.route("/logout")
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    """Clears the current user session and redirects to the public homepage."""
+    session.clear() 
+    
+    # Handle API calls vs standard link clicks
+    if request.method == "POST":
+        return jsonify({"success": True, "message": "Logged out successfully"}), 200
+    return redirect(url_for('home_page')) 
+>>>>>>> Stashed changes
 
     conn.commit()
 
