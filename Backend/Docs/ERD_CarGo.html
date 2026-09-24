@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin:0; padding:24px; background:#ffffff; font-family:Segoe UI, Arial, sans-serif; }
+  h2 { color:#1a1a2e; margin:0 0 16px 0; }
+  .mermaid { background:#ffffff; }
+  .note { font-size:12px; color:#666; margin-top:12px; max-width:900px; }
+</style>
+</head>
+<body>
+<h2>Car-Go Database — Entity Relationship Diagram</h2>
+<div class="mermaid">
+erDiagram
+    CUSTOMERS ||--o{ STATUS : "makes"
+    VEHICLES  ||--o{ STATUS : "has history"
+    CUSTOMERS ||--o| SECURITY : "may have account"
+
+    CUSTOMERS {
+        int customerId PK
+        string email
+        string other_fields "from customer.csv"
+    }
+
+    VEHICLES {
+        int vehicle_id PK
+        string other_fields "from vehicle.csv"
+    }
+
+    STATUS {
+        int rental_id PK
+        int customer_id FK
+        int vehicle_id FK
+        datetime status_date_time
+        string status_location "Bristol, Manchester, Luton"
+        string status "AVAILABLE, RENTED, RETURNED, DAMAGED, SERVICEREQ"
+    }
+
+    SECURITY {
+        int security_id PK
+        string role "CUSTOMER, STAFF"
+        int customer_id FK "NULL for STAFF"
+        string username
+        string password_hash
+        string apikey
+    }
+</div>
+<div class="note">
+  Note: UNIQUE(vehicle_id, status_date_time) on STATUS. security.customer_id is not a
+  DB-enforced FK in the current schema (added by convention, not CREATE TABLE constraint).
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>
