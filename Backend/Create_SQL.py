@@ -91,8 +91,8 @@ def create_database():
         role = "STAFF"
         customer_id = None
         username = f"staff{index}"
-        password_hash = create_hashed_password("password")
-        apikey = create_api_key()
+        password_hash = "passwordhash" #create_hashed_password("password")
+        apikey = f"staffapikey{index}" #create_api_key()
 
         cursor.execute(
         "INSERT INTO security (role, customer_id, username, password_hash, apikey) "
@@ -112,8 +112,8 @@ def create_database():
         role = "CUSTOMER"
         customer_id = int(row['customerId'])
         username = row['email']
-        password_hash = create_hashed_password("password")
-        apikey = create_api_key()
+        password_hash = "passwordhash" #create_hashed_password("password")
+        apikey = f"customerapikey{int(row['customerId'])}" #create_api_key()
 
         cursor.execute(
         "INSERT INTO security (role, customer_id, username, password_hash, apikey) "

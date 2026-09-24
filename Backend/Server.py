@@ -52,8 +52,6 @@ conn = create_database()
 #########################
 #########################
 
-apikeys = {"apikeystaff1234":"staff",
-           "apikeycustomer1234":"customer"}
 
 # creates api key on lohin
 # http://127.0.0.1:5000/api/create/apikey/customer
@@ -65,43 +63,66 @@ def create_apikey(type):
     create_api_key_file(apikey)
     return jsonify({"Sucsess":"api key created"})
 
+
 # gets your api key
 # http://127.0.0.1:5000/api/get/apikey
 @app.route("/api/get/apikey")
 def get_apikey():
-    apikey = get_api_key()
+    #apikey = get_api_key()
+    apikey = "customerapikey1"
     return jsonify({"apikey":apikey})
 
-# ?api_key=2eb95082-82ca-42e6-8eb9-d79ffc872a5c
-def require_customer_apikey(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        #code to check key
-        key = request.headers.get('X-API-KEY') or request.args.get('api_key') #remove request args in real as it leaks the api key
-        apikey = get_api_key()
-        if key is None:
-            return jsonify({"error": "Missing API key"}), 401
-        if key != apikey:
-            return jsonify({"error": "Invalid API key"}), 401
-        return f(*args, **kwargs)
-    return decorated
 
-# ?api_key=2eb95082-82ca-42e6-8eb9-d79ffc872a5c
-def require_staff_apikey(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        #code to check key
-        key = request.headers.get('X-API-KEY') or request.args.get('api_key') #remove request args in real as it leaks the api key
-        apikey = get_api_key()
-        if key is None:
-            return jsonify({"error": "Missing API key"}), 401
-        if key != apikey:
-            return jsonify({"error": "Invalid API key"}), 401
-        return f(*args, **kwargs)
-    return decorated
+# trying to get the role out of the security table with the key
+def get_keys_role(key):
+    query = """
+    SELECT role, customer_id
+    FROM security
+    Where apikey = ?
+    """
+    (key)
+    role_df = pd.read_sql(query, conn, params=(key,))
+    role = role_df.iloc[0]["role"]
+    print(f"role: {role}")
+    return role
+
+
+'''
+# creates a double wrapper to add authentication and authorisation to the api keys
+# get_api_key() gets the users api key from api.json
+# get_keys_role(key) gets the users role from the security table using their api key
+
+Args:
+    required_role (str): the role required to match with either CUSTOMER or STAFF
+
+Returns:
+    Double wrapped function?
+'''
+def require_api_role(required_role):
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            #code to check key
+            key = request.headers.get('X-API-KEY') or request.args.get('api_key') #remove request args in real as it leaks the api key
+            apikey = get_api_key()
+            role = get_keys_role(key)
+            if key is None:
+                return jsonify({"error": "Missing API key"}), 401
+            if key != apikey:
+                return jsonify({"error": "Invalid API key"}), 401
+            if role != required_role:
+                return jsonify({"error": "Insufficient permissions"}), 403
+            return f(*args, **kwargs)
+        return decorated
+    return decorator
+
+
+require_staff_apikey = require_api_role("STAFF")
+require_customer_apikey = require_api_role("CUSTOMER")
 
 # test to check if it is working
-# http://127.0.0.1:5000/vehicle/locations/test?api_key=2eb95082-82ca-42e6-8eb9-d79ffc872a5c
+# http://127.0.0.1:5000/vehicle/locations/test?api_key=staffapikey1
+# http://127.0.0.1:5000/vehicle/locations/test?api_key=customerapikey1
 @app.route("/vehicle/locations/test")
 @require_customer_apikey
 def get_vehicle_locations_fortest():
@@ -111,8 +132,6 @@ def get_vehicle_locations_fortest():
     """
     df = pd.read_sql(query, conn)
     return df.to_json(orient="records")
-
-
 
 
 
