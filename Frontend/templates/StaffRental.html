@@ -1,70 +1,387 @@
-<!-- http://127.0.0.1:5000/staff/rental -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Staff Rental</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Rentals & Fleet - Staff Portal</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for vector icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .modal { transition: opacity 0.25s ease; }
+        .modal.hidden { opacity: 0; pointer-events: none; }
+    </style>
 </head>
-  <body>
-    <header>
-      <h1>Staff Rental</h1>
-    </header>
-    <main>
-      <section>
-        <h2>Welcome to the Staff Rental Page</h2>
-        <p>This is the staff rental page of the website.</p>
-      </section>
+<body class="bg-gray-100 font-sans antialiased text-gray-800 min-h-screen flex flex-col">
 
-      <section>
-        <h2>Other pages</h2>
-        <button onclick="window.location.href='/staffhome';">Staff Home</button>
-        <button onclick="window.location.href='/staff/reports';">Staff Reports</button>
-      </section>
+    <!-- Staff Portal Navigation Bar -->
+    <nav class="bg-slate-900 shadow-md relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+            <div class="flex items-center">
+                <i class="fa-solid fa-car-side text-blue-400 text-2xl mr-2"></i>
+                <span class="text-xl font-bold text-white tracking-tight">AutoRent <span class="text-blue-400 font-medium">Staff</span></span>
+            </div>
+            <div class="flex space-x-6 text-sm font-medium text-slate-300">
+                <a href="/staffhome" class="hover:text-white transition">Dashboard</a>
+                <a href="/staff/rental" class="text-white transition">Manage Fleet</a>
+                <a href="/staff/reports" class="hover:text-white transition">Reports</a>
+                <a href="/" class="ml-4 pl-4 border-l border-slate-700 text-slate-400 hover:text-white transition">Exit Portal</a>
+            </div>
+        </div>
+    </nav>
 
-      <section> 
-        <h2>Get car detail on reg</h2>
-        <input type="text" id="carReg" placeholder="Enter Car Reg"><span>  eg: JA82VXV</span><br>
-        <button onclick="getCarByReg();">Get Car Details</button><br><br>
-        <table id="carDetailsTable" border="1"></table>
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-12">
         
-        <!-- get car to table script -->
-        <script>
-        // Fetching a JSON file and displaying it as a table script  <table id="demoTable" border="1"></table>
+        <!-- SECTION 1: VEHICLE LOOKUP & ACTIONS -->
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fa-solid fa-magnifying-glass-location text-gray-400 mr-3"></i> Lookup Vehicle
+            </h2>
+            
+            <!-- Search Form Input -->
+            <form id="search-form" class="flex gap-4 mb-8 border-b pb-8 border-gray-100">
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                    </div>
+                    <input type="text" id="vrm-input" required placeholder="Enter VRM (e.g. JA82VXV)" class="pl-12 w-full bg-gray-50 border border-gray-300 text-gray-900 text-lg uppercase font-bold rounded-lg block p-4 outline-none">
+                </div>
+                <button type="submit" id="search-btn" class="text-white bg-slate-800 hover:bg-slate-900 font-bold rounded-lg text-lg px-8 py-4 transition">
+                    Look up
+                </button>
+            </form>
+            <div id="search-error" class="hidden text-red-600 font-medium text-center pb-8 border-b border-gray-100"></div>
 
-          // get car to table script
-          async function getCarByReg() {
-            const reg = document.getElementById("carReg").value;
-            const resultBox = document.getElementById("carDetailsTable");
+            <!-- Detailed Vehicle Result Card (Hidden by default) -->
+            <div id="vehicle-card" class="hidden border border-gray-100 rounded-xl overflow-hidden bg-white shadow-sm">
+                <div class="bg-gray-50 border-b border-gray-100 p-6 flex justify-between items-center">
+                    <div>
+                        <h2 id="car-title" class="text-2xl font-bold text-gray-900">Make Model</h2>
+                        <p class="text-sm text-gray-500 uppercase tracking-widest mt-1" id="car-vrm">VRM: XXXX</p>
+                    </div>
+                    <div id="status-badge" class="px-4 py-2 rounded-full font-bold text-sm tracking-wide">STATUS</div>
+                </div>
 
-            try {
-                const response = await fetch(`http://127.0.0.1:5000/vehicles/${reg}`);
-                const data = await response.json();
+                <div class="p-6">
+                    <!-- Specification Attributes Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-6 text-sm text-gray-600 mb-8 pb-8 border-b border-gray-100">
+                        <div><span class="block text-gray-400 font-semibold mb-1">Category</span><span id="car-cat" class="font-bold text-gray-900"></span></div>
+                        <div><span class="block text-gray-400 font-semibold mb-1">Color / Year</span><span id="car-colour-year" class="font-bold text-gray-900"></span></div>
+                        <div><span class="block text-gray-400 font-semibold mb-1">Seats / Fuel</span><span id="car-seats-fuel" class="font-bold text-gray-900"></span></div>
+                        <div><span class="block text-gray-400 font-semibold mb-1">Daily Rate</span><span id="car-rate" class="font-bold text-blue-700"></span></div>
+                        <div><span class="block text-gray-400 font-semibold mb-1">Current Branch</span><span id="car-branch" class="font-bold text-gray-900"></span></div>
+                    </div>
 
-                if (!response.ok) {
-                    resultBox.textContent = `Error: ${data.error}`;
-                    return;
-                }
+                    <!-- Action Control Buttons -->
+                    <div class="flex flex-wrap gap-4 items-center justify-between">
+                        <div class="flex gap-4">
+                            <!-- Process Return Button (Visible only when RENTED) -->
+                            <button id="return-btn" class="hidden text-white bg-green-600 hover:bg-green-700 font-bold rounded-lg text-sm px-6 py-3 transition shadow">
+                                <i class="fa-solid fa-arrow-right-to-bracket mr-2"></i> Process Return
+                            </button>
+                            <!-- Update Status Modal Trigger -->
+                            <button onclick="openStatusModal()" class="text-slate-700 bg-slate-200 hover:bg-slate-300 font-bold rounded-lg text-sm px-6 py-3 transition shadow">
+                                <i class="fa-solid fa-traffic-light mr-2"></i> Update Status
+                            </button>
+                            <!-- Modify Specs Modal Trigger -->
+                            <button onclick="openModifyModal()" class="text-white bg-blue-600 hover:bg-blue-700 font-bold rounded-lg text-sm px-6 py-3 transition shadow">
+                                <i class="fa-solid fa-pen-to-square mr-2"></i> Modify Specs
+                            </button>
+                        </div>
+                        <!-- Remove from Fleet Button -->
+                        <button id="remove-btn-card" class="text-red-700 hover:text-red-900 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-red-50 transition">
+                            <i class="fa-solid fa-trash mr-2"></i> Remove from Fleet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                displayTable(data);  //not [data] because data is an object and not an array so have to take first item.
-            } catch (err) {
-                resultBox.textContent = `Request failed: ${err}`;
-            }
+        <!-- SECTION 2: ADD NEW VEHICLE -->
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fa-solid fa-plus text-gray-400 mr-3"></i> Add New Vehicle
+            </h2>
+            
+            <form id="add-form" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 border-b pb-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">VRM (Registration)</label>
+                        <input type="text" name="vrm" required class="uppercase w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Initial Branch / Location</label>
+                        <input type="text" name="location" required placeholder="e.g. Bristol" class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Make</label>
+                        <input type="text" name="make" required class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Model</label>
+                        <input type="text" name="model" required class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Category</label>
+                        <input type="text" name="category" required class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Daily Rate (£)</label>
+                        <input type="number" step="0.01" name="dayRate" required class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Seats</label>
+                        <input type="number" name="numberSeats" required class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Fuel Economy (mpg)</label>
+                        <input type="number" step="0.1" name="fuelEconomy" class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Colour</label>
+                        <input type="text" name="colour" class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Year</label>
+                        <input type="number" name="year" required class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" id="add-btn" class="text-white bg-green-600 hover:bg-green-700 font-bold rounded-lg text-lg px-8 py-3 transition">
+                        <i class="fa-solid fa-car mr-2"></i> Add to Database
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- MODAL 1: STATUS UPDATE -->
+    <div id="status-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-900">Update Status</h3>
+                <button onclick="closeStatusModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="status-form" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">New Status</label>
+                    <select name="status" class="w-full border border-gray-300 rounded-lg p-3 outline-none bg-white">
+                        <option value="AVAILABLE">AVAILABLE</option>
+                        <option value="DAMAGED">DAMAGED</option>
+                        <option value="SERVICEREQ">SERVICE REQUIRED</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Current Branch/Location</label>
+                    <input type="text" name="location" id="status-location-input" required class="w-full border border-gray-300 rounded-lg p-3 outline-none">
+                </div>
+                <button type="submit" id="status-submit-btn" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-4 hover:bg-slate-900">
+                    Update Status
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: MODIFY SPECS -->
+    <div id="modify-modal" class="modal hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-900">Modify Vehicle Specs</h3>
+                <button onclick="closeModifyModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="modify-form" class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-sm font-semibold">Make</label><input type="text" name="make" id="mod-make" class="w-full border rounded-lg p-2"></div>
+                    <div><label class="text-sm font-semibold">Model</label><input type="text" name="model" id="mod-model" class="w-full border rounded-lg p-2"></div>
+                    <div><label class="text-sm font-semibold">Category</label><input type="text" name="category" id="mod-cat" class="w-full border rounded-lg p-2"></div>
+                    <div><label class="text-sm font-semibold">Day Rate</label><input type="number" step="0.01" name="dayRate" id="mod-rate" class="w-full border rounded-lg p-2"></div>
+                    <div><label class="text-sm font-semibold">Seats</label><input type="number" name="numberSeats" id="mod-seats" class="w-full border rounded-lg p-2"></div>
+                    <div><label class="text-sm font-semibold">Fuel (mpg)</label><input type="number" step="0.1" name="fuelEconomy" id="mod-fuel" class="w-full border rounded-lg p-2"></div>
+                    <div><label class="text-sm font-semibold">Colour</label><input type="text" name="colour" id="mod-colour" class="w-full border rounded-lg p-2"></div>
+                    <div><label class="text-sm font-semibold">Year</label><input type="number" name="year" id="mod-year" class="w-full border rounded-lg p-2"></div>
+                </div>
+                <div class="flex justify-end pt-4"><button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">Save Specs</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentVehicleObj = null;
+        let currentVehicleBranch = "";
+
+        /**
+         * 1. SEARCH VEHICLE HANDLER
+         * Fetches vehicle data and its historical status using the provided VRM.
+         */
+        document.getElementById('search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const vrm = document.getElementById('vrm-input').value.trim().toUpperCase();
+            document.getElementById('search-error').classList.add('hidden');
+            document.getElementById('vehicle-card').classList.add('hidden');
+
+            fetch('/vehicles/' + vrm)
+                .then(r => { if(!r.ok) throw new Error("Vehicle not found"); return r.json(); })
+                .then(data => {
+                    const car = data[0];
+                    currentVehicleObj = car;
+                    
+                    // Populate details on the UI card
+                    document.getElementById('car-title').textContent = `${car.make} ${car.model}`;
+                    document.getElementById('car-vrm').textContent = `VRM: ${car.vrm}`;
+                    document.getElementById('car-cat').textContent = car.category;
+                    document.getElementById('car-colour-year').textContent = `${car.colour} / ${car.year}`;
+                    document.getElementById('car-seats-fuel').textContent = `${car.numberSeats} Seats / ${car.fuelEconomy} mpg`;
+                    document.getElementById('car-rate').textContent = `£${car.dayRate.toFixed(2)}`;
+
+                    return fetch('/vehicle/' + vrm + '/history');
+                })
+                .then(r => r.json())
+                .then(history => {
+                    let status = "UNKNOWN";
+                    currentVehicleBranch = "N/A";
+                    if(history.length > 0) {
+                        status = history[0].status;
+                        currentVehicleBranch = history[0].status_location || "N/A";
+                    }
+
+                    document.getElementById('car-branch').textContent = currentVehicleBranch;
+                    const badge = document.getElementById('status-badge');
+                    badge.textContent = status;
+                    badge.className = "px-4 py-2 rounded-full font-bold text-sm tracking-wide";
+
+                    // Hide return button by default
+                    document.getElementById('return-btn').classList.add('hidden');
+
+                    // Apply dynamic styling based on current operational status
+                    if(status === 'RENTED') {
+                        badge.classList.add('bg-blue-100', 'text-blue-800');
+                        document.getElementById('return-btn').classList.remove('hidden');
+                    } else if (status === 'AVAILABLE') {
+                        badge.classList.add('bg-green-100', 'text-green-800');
+                    } else if (status === 'DAMAGED') {
+                        badge.classList.add('bg-red-100', 'text-red-800');
+                    } else {
+                        badge.classList.add('bg-orange-100', 'text-orange-800');
+                    }
+
+                    document.getElementById('vehicle-card').classList.remove('hidden');
+                })
+                .catch(err => {
+                    document.getElementById('search-error').textContent = err.message;
+                    document.getElementById('search-error').classList.remove('hidden');
+                });
+        });
+
+        /**
+         * 2. ADD NEW VEHICLE HANDLER
+         * Submits form data to register a new car in the database.
+         */
+        document.getElementById('add-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const payload = Object.fromEntries(new FormData(this));
+            
+            fetch('/api/vehicles/add', {
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if(data.error) throw new Error(data.error);
+                alert(data.message);
+                this.reset();
+            })
+            .catch(err => alert("Error: " + err.message));
+        });
+
+        /**
+         * 3. REMOVE VEHICLE HANDLER
+         * Deletes the currently selected vehicle from the fleet.
+         */
+        document.getElementById('remove-btn-card').addEventListener('click', function() {
+            if(!confirm("Permanently delete this vehicle?")) return;
+            fetch('/vehicles/' + currentVehicleObj.vrm, { method: 'DELETE' })
+                .then(r => r.json())
+                .then(() => {
+                    alert("Vehicle deleted!");
+                    document.getElementById('vehicle-card').classList.add('hidden');
+                });
+        });
+
+        /**
+         * 4. PROCESS RETURN HANDLER
+         * Updates a rented vehicle's status back to AVAILABLE.
+         */
+        document.getElementById('return-btn').addEventListener('click', function() {
+            fetch('/vehicles/' + currentVehicleObj.vrm + '/return')
+                .then(r => r.json())
+                .then(() => document.getElementById('search-form').dispatchEvent(new Event('submit')));
+        });
+
+        /**
+         * 5. STATUS MODAL LOGIC & CONTROLS
+         */
+        function openStatusModal() {
+            document.getElementById('status-location-input').value = currentVehicleBranch;
+            document.getElementById('status-modal').classList.remove('hidden');
+        }
+        function closeStatusModal() { 
+            document.getElementById('status-modal').classList.add('hidden'); 
+        }
+        
+        document.getElementById('status-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const payload = Object.fromEntries(new FormData(this));
+            fetch('/api/vehicles/' + currentVehicleObj.vrm + '/status', {
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            }).then(() => {
+                closeStatusModal();
+                document.getElementById('search-form').dispatchEvent(new Event('submit'));
+            });
+        });
+
+        /**
+         * 6. MODIFY SPECS MODAL LOGIC & CONTROLS
+         */
+        function openModifyModal() {
+            const car = currentVehicleObj;
+            document.getElementById('mod-make').value = car.make;
+            document.getElementById('mod-model').value = car.model;
+            document.getElementById('mod-cat').value = car.category;
+            document.getElementById('mod-seats').value = car.numberSeats;
+            document.getElementById('mod-fuel').value = car.fuelEconomy;
+            document.getElementById('mod-rate').value = car.dayRate;
+            document.getElementById('mod-colour').value = car.colour;
+            document.getElementById('mod-year').value = car.year;
+            document.getElementById('modify-modal').classList.remove('hidden');
+        }
+        function closeModifyModal() { 
+            document.getElementById('modify-modal').classList.add('hidden'); 
         }
 
-        // Function to display table
-        function displayTable(data) {
-          let vehiculeData = data[0];  // data is an object and not an array so have to take first item.
-          let html = "<tr><th>Field</th><th>Value</th></tr>";
-          for (let key in vehiculeData) {
-            html += `<tr><td>${key}</td><td>${vehiculeData[key]}</td></tr>`;
-          }
-          document.getElementById("carDetailsTable").innerHTML = html;
-        }
-        </script>
-      </section>
-
-  </body>
+        document.getElementById('modify-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const payload = Object.fromEntries(new FormData(this));
+            fetch('/api/vehicles/' + currentVehicleObj.vrm + '/update', {
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            }).then(() => {
+                closeModifyModal();
+                document.getElementById('search-form').dispatchEvent(new Event('submit'));
+            });
+        });
+    </script>
+</body>
 </html>

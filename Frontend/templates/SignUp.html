@@ -3,138 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - AutoRent</title>
+    <title>Create Account - AutoRent</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for iconography -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans antialiased text-gray-800 min-h-screen flex flex-col">
+<body class="bg-gray-50 font-sans antialiased text-gray-800 min-h-screen flex flex-col justify-center py-10">
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <a href="/" class="flex-shrink-0 flex items-center hover:opacity-80 transition">
-                    <i class="fa-solid fa-car-side text-blue-600 text-2xl mr-2"></i>
-                    <span class="text-xl font-bold text-gray-900 tracking-tight">Auto<span class="text-blue-600">Rent</span></span>
-                </a>
-                <a href="/" class="text-sm text-gray-500 hover:text-blue-600 transition">
-                    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Home
-                </a>
-            </div>
+    <div class="max-w-4xl mx-auto w-full px-4 sm:px-6">
+        
+        <!-- Brand Logo & Header Section -->
+        <div class="text-center mb-8">
+            <a href="/" class="inline-flex items-center hover:opacity-80 transition">
+                <i class="fa-solid fa-car-side text-blue-600 text-4xl mr-3"></i>
+                <span class="text-4xl font-bold text-gray-900">Auto<span class="text-blue-600">Rent</span></span>
+            </a>
+            <h2 class="text-2xl font-bold text-gray-900 mt-6">Create your account</h2>
+            <p class="text-gray-500 mt-2">Join us to book your premium vehicle today.</p>
         </div>
-    </nav>
 
-    <!-- Sign Up Area -->
-    <div class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl w-full bg-white rounded-xl shadow-lg p-8">
-            
-            <div class="text-center mb-8">
-                <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fa-solid fa-user-plus text-blue-600 text-2xl"></i>
-                </div>
-                <h2 class="text-3xl font-extrabold text-gray-900">Create an account</h2>
-                <p class="mt-2 text-sm text-gray-600">
-                    Already have an account? 
-                    <a href="/login" class="font-medium text-blue-600 hover:text-blue-500 transition">Log in here</a>
-                </p>
-            </div>
-
-            <form class="space-y-6" action="/signup" method="POST">
+        <!-- Registration Form Card Container -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div class="p-8 sm:p-10">
                 
-                <!-- 2-Column Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Dynamic Error or Success Message Display Banner -->
+                <div id="msg-banner" class="hidden mb-6 p-4 rounded-lg font-medium text-center"></div>
+
+                <form id="signup-form" class="space-y-6">
                     
-                    <!-- First Name -->
-                    <div>
-                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                        <input id="first_name" name="first_name" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="John">
+                    <!-- Section: Personal Details -->
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2">
+                        <i class="fa-solid fa-user text-blue-500 mr-2"></i>Personal Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">First Name</label>
+                            <input type="text" name="first_name" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Last Name</label>
+                            <input type="text" name="last_name" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Date of Birth</label>
+                            <input type="date" name="dob" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Gender</label>
+                            <select name="gender" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                                <option value="" disabled selected>Select gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other / Prefer not to say</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Last Name -->
-                    <div>
-                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                        <input id="last_name" name="last_name" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="Doe">
+                    <!-- Section: Contact & Location Information -->
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2 pt-4">
+                        <i class="fa-solid fa-envelope text-blue-500 mr-2"></i>Contact & Location
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                            <input type="email" name="email" required placeholder="you@example.com" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Address</label>
+                            <input type="text" name="address" required placeholder="123 Main St" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">City</label>
+                            <input type="text" name="city" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Country</label>
+                            <input type="text" name="country" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
                     </div>
 
-                    <!-- Date of Birth -->
-                    <div>
-                        <label for="dob" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                        <input id="dob" name="dob" type="date" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
+                    <!-- Section: Legal Documentation -->
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2 pt-4">
+                        <i class="fa-solid fa-id-card text-blue-500 mr-2"></i>Legal Documents
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Driving License Number</label>
+                            <input type="text" name="drivingLicenseNumber" required class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500 uppercase">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Passport Number (Optional)</label>
+                            <input type="text" name="passportNumber" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500 uppercase">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">License Restrictions (If any)</label>
+                            <input type="text" name="LicenseRetrictions" placeholder="e.g., Automatic only, Glasses required (Leave empty if none)" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 outline-none focus:border-blue-500">
+                        </div>
                     </div>
 
-                    <!-- Gender -->
-                    <div>
-                        <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                        <select id="gender" name="gender" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
-                            <option value="" disabled selected>Select gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
+                    <!-- Form Submission Button -->
+                    <div class="pt-6">
+                        <button type="submit" id="submit-btn" class="w-full text-white bg-blue-600 hover:bg-blue-700 font-bold rounded-lg text-lg px-5 py-4 transition shadow-md">
+                            Create Account
+                        </button>
                     </div>
 
-                    <!-- Email Address -->
-                    <div class="md:col-span-2">
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input id="email" name="email" type="email" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="example@email.com">
-                    </div>
+                </form>
+                
+                <!-- Link back to login page -->
+                <p class="text-center text-sm text-gray-600 mt-6">
+                    Already have an account? <a href="/login" class="font-bold text-blue-600 hover:underline">Sign in here</a>
+                </p>
 
-                    <!-- Address -->
-                    <div class="md:col-span-2">
-                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                        <input id="address" name="address" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="123 Main St">
-                    </div>
-
-                    <!-- City -->
-                    <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                        <input id="city" name="city" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="London">
-                    </div>
-
-                    <!-- Country -->
-                    <div>
-                        <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                        <input id="country" name="country" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="United Kingdom">
-                    </div>
-
-                    <!-- Driving License Number -->
-                    <div>
-                        <label for="drivingLicenseNumber" class="block text-sm font-medium text-gray-700 mb-1">Driving License Number</label>
-                        <input id="drivingLicenseNumber" name="drivingLicenseNumber" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
-                    </div>
-
-                    <!-- Passport Number -->
-                    <div>
-                        <label for="passportNumber" class="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
-                        <input id="passportNumber" name="passportNumber" type="text" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition">
-                    </div>
-
-                    <!-- License Restrictions -->
-                    <div class="md:col-span-2">
-                        <label for="LicenseRetrictions" class="block text-sm font-medium text-gray-700 mb-1">License Restrictions (if any)</label>
-                        <input id="LicenseRetrictions" name="LicenseRetrictions" type="text" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="e.g. Glasses required, Automatic only">
-                    </div>
-
-                    <!-- Password -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <input id="password" name="password" type="password" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="••••••••">
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div>
-                        <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                        <input id="confirm_password" name="confirm_password" type="password" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-3 outline-none transition" placeholder="••••••••">
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-gray-200 mt-6">
-                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition">
-                        Create Account
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
+
+    <script>
+        /**
+         * Intercepts the form submit event to asynchronously post payload data
+         * to the Flask backend without requiring a full page refresh.
+         */
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const msgBanner = document.getElementById('msg-banner');
+            
+            // Activate loading visual feedback state on the submit button
+            const originalBtnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Creating account...';
+            btn.disabled = true;
+            
+            // Reset and hide message status banner
+            msgBanner.classList.add('hidden');
+            msgBanner.className = "mb-6 p-4 rounded-lg font-medium text-center hidden"; 
+
+            // Serialize all form input parameters into a structured JavaScript object
+            const formData = new FormData(this);
+            const payload = Object.fromEntries(formData.entries());
+            
+            // Provide a default value for optional license restrictions if left blank
+            if (!payload.LicenseRetrictions.trim()) {
+                payload.LicenseRetrictions = "None";
+            }
+
+            // Transmit the registration payload to the Flask backend via POST
+            fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Display success banner and style accordingly
+                    msgBanner.textContent = data.message;
+                    msgBanner.classList.add('bg-green-100', 'text-green-800');
+                    msgBanner.classList.remove('hidden');
+                    
+                    // Smoothly redirect the user to the login page after a short delay
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1500);
+                } else {
+                    // Display backend validation error (e.g., email already taken)
+                    msgBanner.textContent = data.error;
+                    msgBanner.classList.add('bg-red-100', 'text-red-800');
+                    msgBanner.classList.remove('hidden');
+                    
+                    // Restore button to its normal state
+                    btn.innerHTML = originalBtnText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                // Handle unexpected network or server communication failures
+                msgBanner.textContent = "Server error. Please try again later.";
+                msgBanner.classList.add('bg-red-100', 'text-red-800');
+                msgBanner.classList.remove('hidden');
+                
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            });
+        });
+    </script>
 </body>
 </html>

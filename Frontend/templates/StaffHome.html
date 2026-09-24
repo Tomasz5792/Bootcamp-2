@@ -1,71 +1,151 @@
-<!-- http://127.0.0.1:5000/staffhome -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Staff Home</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard - AutoRent</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-  <body>
-    <header>
-      <h1>Staff Home</h1>
-    </header>
-    <main>
-      <section>
-        <h2>Welcome to the Staff Home Page</h2>
-        <p>This is the staff home page of the website.</p>
-      </section>
+<body class="bg-gray-100 font-sans antialiased text-gray-800 min-h-screen flex flex-col">
 
-      <section>
-        <h2>Other pages</h2>
-        <button onclick="window.location.href='/staff/rental';">Rental</button>
-        <button onclick="window.location.href='/staff/reports';">Reports</button>
-        <button onclick="window.location.href='/';">Customer Home</button>
-      </section>
+    <!-- Staff Portal Navigation Bar -->
+    <nav class="bg-slate-900 shadow-md relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+            <div class="flex items-center">
+                <i class="fa-solid fa-car-side text-blue-400 text-2xl mr-2"></i>
+                <span class="text-xl font-bold text-white tracking-tight">AutoRent <span class="text-blue-400 font-medium">Staff</span></span>
+            </div>
+            <div class="flex space-x-6 text-sm font-medium text-slate-300">
+                <a href="/staffhome" class="text-white hover:text-blue-400 transition">Dashboard</a>
+                <a href="/staff/rental" class="hover:text-white transition">Manage Rentals</a>
+                <a href="/staff/reports" class="hover:text-white transition">Reports</a>
+                <a href="/" class="ml-4 pl-4 border-l border-slate-700 text-slate-400 hover:text-white transition">Exit Portal</a>
+            </div>
+        </div>
+    </nav>
 
-      <section> 
-        <h2>Get car detail on reg</h2>
-        <input type="text" id="carReg" placeholder="Enter Car Reg"><span>  eg: JA82VXV</span><br>
-        <button onclick="getCarByReg();">Get Car Details</button><br><br>
-        <table id="carDetailsTable" border="1"></table>
+    <!-- Main Dashboard Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         
-        <!-- get car to table script -->
-        <script>
-        // Fetching a JSON file and displaying it as a table script  <table id="demoTable" border="1"></table>
+        <!-- Header Title Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-gray-900">Fleet Overview</h1>
+            <p class="text-gray-500 mt-1">Real-time status of all vehicles in the database.</p>
+        </div>
 
-          // get car to table script
-          async function getCarByReg() {
-            const reg = document.getElementById("carReg").value;
-            const resultBox = document.getElementById("carDetailsTable");
+        <!-- KPI Cards Grid (Dynamically populated via JavaScript) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            
+            <!-- Available KPI Card -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-green-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wide">Available</p>
+                        <h3 id="count-available" class="text-3xl font-black text-gray-900 mt-1"><i class="fa-solid fa-spinner fa-spin text-lg text-gray-300"></i></h3>
+                    </div>
+                    <div class="p-3 bg-green-100 rounded-lg"><i class="fa-solid fa-check text-green-600 text-xl"></i></div>
+                </div>
+            </div>
 
-            try {
-                const response = await fetch(`http://127.0.0.1:5000/vehicles/${reg}`);
-                const data = await response.json();
+            <!-- Rented KPI Card -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-blue-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wide">Rented</p>
+                        <h3 id="count-rented" class="text-3xl font-black text-gray-900 mt-1"><i class="fa-solid fa-spinner fa-spin text-lg text-gray-300"></i></h3>
+                    </div>
+                    <div class="p-3 bg-blue-100 rounded-lg"><i class="fa-solid fa-key text-blue-600 text-xl"></i></div>
+                </div>
+            </div>
+            
+            <!-- In Service KPI Card -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-orange-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wide">In Service</p>
+                        <h3 id="count-service" class="text-3xl font-black text-gray-900 mt-1"><i class="fa-solid fa-spinner fa-spin text-lg text-gray-300"></i></h3>
+                    </div>
+                    <div class="p-3 bg-orange-100 rounded-lg"><i class="fa-solid fa-wrench text-orange-600 text-xl"></i></div>
+                </div>
+            </div>
 
-                if (!response.ok) {
-                    resultBox.textContent = `Error: ${data.error}`;
-                    return;
-                }
+            <!-- Damaged KPI Card -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-l-4 border-l-red-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wide">Damaged</p>
+                        <h3 id="count-damaged" class="text-3xl font-black text-gray-900 mt-1"><i class="fa-solid fa-spinner fa-spin text-lg text-gray-300"></i></h3>
+                    </div>
+                    <div class="p-3 bg-red-100 rounded-lg"><i class="fa-solid fa-car-burst text-red-600 text-xl"></i></div>
+                </div>
+            </div>
+        </div>
 
-                displayTable(data);  //not [data] because data is an object and not an array so have to take first item.
-            } catch (err) {
-                resultBox.textContent = `Request failed: ${err}`;
-            }
-        }
+        <!-- Quick Actions Navigation Section -->
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Link to Fleet & Rental Management -->
+            <a href="/staff/rental" class="group bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-300 transition flex items-center">
+                <div class="bg-blue-50 p-4 rounded-full mr-6 group-hover:bg-blue-600 group-hover:text-white transition">
+                    <i class="fa-solid fa-right-left text-2xl text-blue-600 group-hover:text-white"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Manage Rentals & Returns</h3>
+                    <p class="text-sm text-gray-500">Process vehicle returns, add new cars to the fleet, or remove retired vehicles.</p>
+                </div>
+            </a>
 
-        // Function to display table
-        function displayTable(data) {
-          let vehiculeData = data[0];  // data is an object and not an array so have to take first item.
-          let html = "<tr><th>Field</th><th>Value</th></tr>";
-          for (let key in vehiculeData) {
-            html += `<tr><td>${key}</td><td>${vehiculeData[key]}</td></tr>`;
-          }
-          document.getElementById("carDetailsTable").innerHTML = html;
-        }
-        </script>
-      </section>
+            <!-- Link to Analytics & Reports -->
+            <a href="/staff/reports" class="group bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-purple-300 transition flex items-center">
+                <div class="bg-purple-50 p-4 rounded-full mr-6 group-hover:bg-purple-600 group-hover:text-white transition">
+                    <i class="fa-solid fa-chart-pie text-2xl text-purple-600 group-hover:text-white"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">View Analytics & Reports</h3>
+                    <p class="text-sm text-gray-500">See detailed breakdowns of vehicle distribution across branches and history.</p>
+                </div>
+            </a>
+        </div>
+    </main>
 
-  </body>
+    <script>
+        /**
+         * Fetches real-time status data from the backend report API
+         * and updates the administrative KPI counters on DOM load.
+         */
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('/reports/status')
+                .then(response => response.json())
+                .then(data => {
+                    // Initialize counters to zero as a fallback safety measure
+                    let available = 0, rented = 0, service = 0, damaged = 0;
+
+                    // Iterate through the retrieved SQL records and assign counts
+                    data.forEach(item => {
+                        if (item.status === 'AVAILABLE') available = item.total;
+                        if (item.status === 'RENTED') rented = item.total;
+                        if (item.status === 'SERVICEREQ') service = item.total;
+                        if (item.status === 'DAMAGED') damaged = item.total;
+                    });
+
+                    // Inject computed total values into the respective HTML heading elements
+                    document.getElementById('count-available').textContent = available;
+                    document.getElementById('count-rented').textContent = rented;
+                    document.getElementById('count-service').textContent = service;
+                    document.getElementById('count-damaged').textContent = damaged;
+                })
+                .catch(err => {
+                    console.error("Error fetching fleet status:", err);
+                    document.getElementById('count-available').textContent = '-';
+                    document.getElementById('count-rented').textContent = '-';
+                    document.getElementById('count-service').textContent = '-';
+                    document.getElementById('count-damaged').textContent = '-';
+                });
+        });
+    </script>
+</body>
 </html>

@@ -1,5 +1,0 @@
-$kind: http-request
-description: 'Generates a summary report of the fleet broken down by vehicle status (e.g. AVAILABLE, RENTED). Use this request to get a high-level snapshot of how many vehicles fall into each status category across the entire Car-Go Rentals inventory.'
-url: ""
-method: GET
-order: 4195988804246836
