@@ -32,6 +32,7 @@ import json
 from Create_SQL import create_database, check_database
 import datetime
 from urllib.parse import quote
+from Security import get_api_key, create_api_key, create_api_key_file
 
 
 # Initialize Flask App with specific template and static folders
@@ -41,6 +42,21 @@ app.secret_key = "cheie_super_secreta_pentru_sesiuni" # Required for session man
 # Initialize and populate the in-memory SQLite database
 conn = create_database()
 # check_database(conn)  # Uncomment to show the sql tables for debugging purposes
+
+#########################
+#########################
+##### Autherisation #####
+#########################
+#########################
+
+#creates api key on lohin
+#http://127.0.0.1:5000/
+@app.route("/api/create/apikey")
+def create_apikey():
+    return render_template("Home.html")
+
+
+
 
 
 #################

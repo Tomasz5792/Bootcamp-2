@@ -3,8 +3,9 @@
 
 import json
 import os
-import uuid
+import uuid  # not as secret as secret apparently
 from werkzeug.security import generate_password_hash
+import secrets
 
 # url for website
 #url = "http://localhost:5000/hello" # I dont think this is needed anymore
@@ -15,16 +16,16 @@ print(f'Filepath: {filepath}')
 
 
 #generate random api key
-def create_api_key():
-    """Generates a random API key using UUID4.
+def create_api_key(type: str = "cust"):
+    """Generates a cryptographicly random API key using secret.
 
     Args:
-        none
+        type (str): type of key staff or customer, default cust.
 
     Returns:
         str: A randomly generated API key.
     """
-    return str(uuid.uuid4())
+    return f"{type}_{secrets.token_urlsafe(32)}"
 
 
 # make a random UUID and convert to 32bit hex
