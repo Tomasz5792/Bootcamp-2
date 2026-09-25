@@ -1,17 +1,17 @@
 # For individual vehicles:
-# - show details of specific vehicle (according to car reg) ---------------------------------------------------- done
+# - show details of specific vehicle (according to car reg) ---------------------------------------------------- 
 # - rent a specific vehicle ------------------------------------------------------------------------------------ 
 # - return a specific vehicle ---------------------------------------------------------------------------------- 
 # - add a new vehicle to the rental fleet ---------------------------------------------------------------------- 
 # - remove a specific vehicle from the rental fleet ------------------------------------------------------------ 
 
 # For multiple vehicles:
-# - show all vehicles ------------------------------------------------------------------------------------------ done
+# - show all vehicles ------------------------------------------------------------------------------------------ 
 # - show vehicles available for rent (preferably organised per branch) ----------------------------------------- 
 # - show vehicles currently rented out (preferably organised per branch) --------------------------------------- 
 
 # Extensions:
-# - Homepage --------------------------------------------------------------------------------------------------- done
+# - Homepage --------------------------------------------------------------------------------------------------- 
 # - show reports for number of vehicles per branch ------------------------------------------------------------- 
 # - show reports for number of vehicles per status (available, rented, returned, damaged, service required) ---- 
 # - show reports for number of vehicles per status per branch -------------------------------------------------- 
