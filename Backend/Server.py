@@ -261,11 +261,18 @@ def get_vehicle_by_vrm(vrm):
     return df
  
 def get_vehicle_id(vrm):
-    """Retrieves the numeric primary key of a vehicle based on its VRM."""
+ 
     vehicle = get_vehicle_by_vrm(vrm)
+ 
     if vehicle.empty:
         return None
-    return int(vehicle.iloc[0]["vehicle_id"])
+ 
+    vehicle_id = vehicle.iloc[0]["vehicle_id"]
+ 
+    if pd.isna(vehicle_id):
+        return None
+ 
+    return int(vehicle_id)
  
 def get_latest_status(vehicle_id):
     """Fetches the most recent status record for a specific vehicle."""
@@ -786,7 +793,23 @@ def get_vehicle_types():
 def add_vehicle():
     """Adds a new vehicle to the fleet and sets its initial status to AVAILABLE."""
     data = request.get_json()
-    cursor = conn.cursor()
+    # Get next vehicle_id
+ 
+    max_id_df = pd.read_sql(
+        """
+        SELECT MAX(vehicle_id) AS max_id
+        FROM vehicles
+        """,
+        conn
+    )
+ 
+    max_id = max_id_df.iloc[0]["max_id"]
+ 
+    if pd.isna(max_id):
+        new_vehicle_id = 1
+    else:
+        new_vehicle_id = int(max_id) + 1
+        cursor = conn.cursor()
     try:
         # Check for VRM duplication
         check = pd.read_sql("SELECT vehicle_id FROM vehicles WHERE UPPER(vrm) = ?", conn, params=(data['vrm'].upper(),))
@@ -795,11 +818,38 @@ def add_vehicle():
  
         # Insert vehicle spec details
         cursor.execute(
-            "INSERT INTO vehicles (vrm, make, model, category, numberSeats, fuelEconomy, colour, year, dayRate) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (data['vrm'].upper(), data['make'], data['model'], data['category'],
-             data['numberSeats'], data.get('fuelEconomy', 0), data['colour'], data['year'], data['dayRate'])
-        )
+    """
+    INSERT INTO vehicles
+    (
+        vehicle_id,
+        vrm,
+        make,
+        model,
+        category,
+        numberSeats,
+        fuelEconomy,
+        colour,
+        year,
+        dayRate
+    )
+    VALUES
+    (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    )
+    """,
+    (
+        new_vehicle_id,
+        data["vrm"].upper(),
+        data["make"],
+        data["model"],
+        data["category"],
+        data["numberSeats"],
+        data.get("fuelEconomy", 0),
+        data["colour"],
+        data["year"],
+        data["dayRate"]
+    )
+)
        
         vehicle_id = cursor.lastrowid
         location = data.get('location', 'Bristol')
